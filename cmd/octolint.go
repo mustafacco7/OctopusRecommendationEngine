@@ -20,11 +20,18 @@ import (
 	"time"
 )
 
+var Version = "development"
+
 func main() {
 	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
 	s.Start()
 
-	url, space, apiKey, skipTests, verboseErrors := parseArgs()
+	version, url, space, apiKey, skipTests, verboseErrors := parseArgs()
+
+	if version {
+		fmt.Println("Version: " + Version)
+		os.Exit(0)
+	}
 
 	if url == "" {
 		errorExit("You must specify the URL with the -url argument")
@@ -90,7 +97,7 @@ func errorExit(message string) {
 	os.Exit(1)
 }
 
-func parseArgs() (string, string, string, string, bool) {
+func parseArgs() (bool, string, string, string, string, bool) {
 	var url string
 	flag.StringVar(&url, "url", "", "The Octopus URL e.g. https://myinstance.octopus.app")
 
@@ -104,7 +111,10 @@ func parseArgs() (string, string, string, string, bool) {
 	flag.StringVar(&skipTests, "skipTests", "", "A comma separated list of tests to skip")
 
 	var verboseErrors bool
-	flag.BoolVar(&verboseErrors, "verboseErrors", false, "Print error details as verbose logs inOctopus")
+	flag.BoolVar(&verboseErrors, "verboseErrors", false, "Print error details as verbose logs in Octopus")
+
+	var version bool
+	flag.BoolVar(&version, "version", false, "Print the version")
 
 	flag.Parse()
 
@@ -116,7 +126,7 @@ func parseArgs() (string, string, string, string, bool) {
 		apiKey = os.Getenv("OCTOPUS_CLI_API_KEY")
 	}
 
-	return url, space, apiKey, skipTests, verboseErrors
+	return version, url, space, apiKey, skipTests, verboseErrors
 }
 
 func lookupSpaceAsName(octopusUrl string, spaceName string, apiKey string) (string, error) {

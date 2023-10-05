@@ -97,15 +97,15 @@ jobs:
           path: results.xml
           reporter: java-junit
           fail-on-error: 'false'
-      - run: go build -o octolint_linux_amd64 cmd/octolint.go
+      - run: go build -ldflags="-X 'main.Version=${{ steps.determine_version.outputs.semVer }}'" -o octolint_linux_amd64 cmd/octolint.go
         env:
           GOOS: linux
           GOARCH: amd64
-      - run: go build -o octolint_windows_amd64.exe cmd/octolint.go
+      - run: go build -ldflags="-X 'main.Version=${{ steps.determine_version.outputs.semVer }}'" -o octolint_windows_amd64.exe cmd/octolint.go
         env:
           GOOS: windows
           GOARCH: amd64
-      - run: go build -o octolint_macos_arm64 cmd/octolint.go
+      - run: go build -ldflags="-X 'main.Version=${{ steps.determine_version.outputs.semVer }}'" -o octolint_macos_arm64 cmd/octolint.go
         env:
           GOOS: darwin
           GOARCH: arm64
@@ -161,11 +161,13 @@ jobs:
         with:
           push: true
           tags: octopussamples/octolint-linux:latest
+          build-args: Version=${{ steps.determine_version.outputs.semVer }}
       - name: Build and push versioned image
         uses: docker/build-push-action@v3
         with:
           push: true
           tags: octopussamples/octolint-linux:${{ steps.determine_version.outputs.semVer }}
+          build-args: Version=${{ steps.determine_version.outputs.semVer }}
   build-windows:
     runs-on: windows-2019
     steps:
@@ -195,7 +197,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: go build -o octolint_windows_amd64.exe cmd/octolint.go
+      - run: go build -ldflags="-X 'main.Version=${{ steps.determine_version.outputs.semVer }}'" -o octolint_windows_amd64.exe cmd/octolint.go
         env:
           GOOS: windows
           GOARCH: amd64
