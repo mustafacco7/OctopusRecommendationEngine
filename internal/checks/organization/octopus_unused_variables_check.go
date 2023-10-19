@@ -157,6 +157,13 @@ func (o OctopusUnusedVariablesCheck) naiveStepVariableScan(deploymentSteps []*de
 						return true
 					}
 				}
+
+				// Packages and feeds can use variables
+				for _, p := range a.Packages {
+					if strings.Index(p.FeedID, variable.Name) != -1 || strings.Index(p.PackageID, variable.Name) != -1 {
+						return true
+					}
+				}
 			}
 		}
 	}
