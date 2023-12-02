@@ -27,3 +27,4 @@ octolint
 results.xml
 
 dependencyUpdates.txt
+**/.terraform.lock.hcl
