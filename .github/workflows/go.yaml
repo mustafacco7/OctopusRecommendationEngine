@@ -76,7 +76,9 @@ jobs:
           }
           EOT
       - name: Test
-        run: go install gotest.tools/gotestsum@latest; gotestsum --junitfile results.xml -- -timeout 0 -v ./...
+        run: |
+          go install gotest.tools/gotestsum@latest
+          gotestsum --junitfile results.xml -- -timeout 0 -v ./...
         shell: bash
         env:
           # Set this to a base64 encoded Octopus license. It is passed to the Octopus docker image, which requires an
@@ -89,6 +91,7 @@ jobs:
           TEST_GIT_REPO: ${{ secrets.TEST_GIT_REPO }}
           TEST_GIT_PASSWORD: ${{ secrets.GIT_CREDENTIAL }}
           TEST_GIT_USERNAME: ${{ secrets.TEST_GIT_USERNAME }}
+          TESTCONTAINERS_RYUK_DISABLED: true
       - if: always()
         name: Report
         uses: dorny/test-reporter@v1
