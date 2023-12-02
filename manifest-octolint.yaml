@@ -6,6 +6,11 @@ manifests:
       architecture: amd64
       os: linux
   -
+    image: octopussamples/octolint-linux-arm64-v8:latest
+    platform:
+      architecture: arm64/v8
+      os: linux
+  -
     image: octopussamples/octolint-windows:latest
     platform:
       architecture: amd64

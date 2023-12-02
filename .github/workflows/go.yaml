@@ -238,7 +238,7 @@ jobs:
           asset_name: octolint_macos_arm64
           asset_content_type: application/octet-stream
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Login to DockerHub
@@ -248,13 +248,13 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push latest
         if: ${{ steps.branch-name.outputs.current_branch == 'main' }}
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v5
         with:
           push: true
           tags: octopussamples/octolint-linux:latest
           build-args: Version=${{ steps.determine_version.outputs.semVer }}
       - name: Build and push versioned image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v5
         with:
           push: true
           tags: octopussamples/octolint-linux:${{ steps.determine_version.outputs.semVer }}
@@ -299,8 +299,48 @@ jobs:
         run: |
           docker build --platform windows/amd64 . -f Dockerfile.windows -t octopussamples/octolint-windows:${{ steps.determine_version.outputs.semVer }}
           docker push octopussamples/octolint-windows:${{ steps.determine_version.outputs.semVer }}
+  build-mac:
+    runs-on: macos-13-large
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v7
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.15
+        with:
+          versionSpec: 5.x
+      - id: determine_version
+        name: Determine Version
+        uses: gittools/actions/gitversion/execute@v0.9.15
+        with:
+          additionalArguments: /overrideconfig mode=Mainline
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Build and push latest
+        if: ${{ steps.branch-name.outputs.current_branch == 'main' }}
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          platform: linux/arm64/v8
+          tags: octopussamples/octolint-linux-arm64-v8:latest
+          build-args: Version=${{ steps.determine_version.outputs.semVer }}
+      - name: Build and push versioned image
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          platform: linux/arm64/v8
+          tags: octopussamples/octolint-linux-arm64-v8:${{ steps.determine_version.outputs.semVer }}
+          build-args: Version=${{ steps.determine_version.outputs.semVer }}
   multiarch-image:
-    needs: [ build-windows, build ]
+    needs: [ build-mac, build-windows, build ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
