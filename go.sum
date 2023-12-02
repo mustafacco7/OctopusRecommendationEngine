@@ -20,6 +20,8 @@ github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework v0.0.0-2023
 github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework v0.0.0-20230417021236-60777d52506c/go.mod h1:k6LkAcykjgqJYo9vVyfD7X96E85aAVrLlljtKMr27wU=
 github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework v0.0.0-20231202051302-de67f54dad6f h1:GxMN9OgKetLGRJUUgX+at2ISStHWkDlMXxSuGavoOxo=
 github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework v0.0.0-20231202051302-de67f54dad6f/go.mod h1:3MSsqrumt39nMyg9039r1J294ESis3+jwZEI6Gj6Ku8=
+github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework v0.0.0-20231202221706-525b307d66b0 h1:sDFi7SKamfiLtymY4PTPx1b/UpPwCQLzx853QK76FSo=
+github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework v0.0.0-20231202221706-525b307d66b0/go.mod h1:3MSsqrumt39nMyg9039r1J294ESis3+jwZEI6Gj6Ku8=
 github.com/avast/retry-go/v4 v4.3.3 h1:G56Bp6mU0b5HE1SkaoVjscZjlQb0oy4mezwY/cGH19w=
 github.com/avast/retry-go/v4 v4.3.3/go.mod h1:rg6XFaiuFYII0Xu3RDbZQkxCofFwruZKW8oEF1jpWiU=
 github.com/avast/retry-go/v4 v4.5.0/go.mod h1:7hLEXp0oku2Nir2xBAsg0PTphp9z71bN5Aq1fboC3+I=

@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/OctopusDeploy/go-octopusdeploy/v2 v2.34.0
-	github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework v0.0.0-20231202051302-de67f54dad6f
+	github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework v0.0.0-20231202221706-525b307d66b0
 	github.com/avast/retry-go/v4 v4.5.1
 	github.com/briandowns/spinner v1.23.0
 	github.com/samber/lo v1.39.0
