@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/lifecycles"
-	"github.com/mcasperson/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
 	"golang.org/x/exp/slices"
 	"strings"
 )

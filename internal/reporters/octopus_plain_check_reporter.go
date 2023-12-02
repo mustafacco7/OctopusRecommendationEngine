@@ -1,7 +1,7 @@
 package reporters
 
 import (
-	"github.com/mcasperson/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
 	"strings"
 )
 

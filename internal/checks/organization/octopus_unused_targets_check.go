@@ -8,7 +8,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/tasks"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
-	"github.com/mcasperson/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
 	"regexp"
 	"strings"
 	"time"

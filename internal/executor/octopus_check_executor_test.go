@@ -1,7 +1,7 @@
 package executor
 
 import (
-	"github.com/mcasperson/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
 	"testing"
 )
 

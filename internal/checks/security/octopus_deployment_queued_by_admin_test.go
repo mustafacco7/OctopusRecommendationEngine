@@ -8,10 +8,10 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/users"
-	"github.com/mcasperson/OctopusRecommendationEngine/internal/checks"
-	"github.com/mcasperson/OctopusTerraformTestFramework/octoclient"
-	"github.com/mcasperson/OctopusTerraformTestFramework/test"
-	"github.com/mcasperson/OctopusTerraformTestFramework/wait"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/octoclient"
+	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/test"
+	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/wait"
 	"path/filepath"
 	"testing"
 	"time"
@@ -176,7 +176,7 @@ func TestDeployedByUser(t *testing.T) {
 			return err
 		}
 
-		apiKey, err := newSpaceClient.APIKeys.Create(&users.APIKey{
+		apiKey, err := newSpaceClient.APIKeys.Create(&users.CreateAPIKey{
 			APIKey: "API-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 			UserID: bob.Items[0].ID,
 		})

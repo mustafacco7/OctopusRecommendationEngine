@@ -1,8 +1,8 @@
 package executor
 
 import (
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
 	"github.com/avast/retry-go/v4"
-	"github.com/mcasperson/OctopusRecommendationEngine/internal/checks"
 )
 
 // OctopusCheckExecutor is responsible for running each lint check and returning the results. It deals with things

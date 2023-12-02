@@ -2,10 +2,10 @@ package factory
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
-	"github.com/mcasperson/OctopusRecommendationEngine/internal/checks"
-	"github.com/mcasperson/OctopusRecommendationEngine/internal/checks/organization"
-	"github.com/mcasperson/OctopusRecommendationEngine/internal/checks/performance"
-	"github.com/mcasperson/OctopusRecommendationEngine/internal/checks/security"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/organization"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/performance"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/security"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"strings"

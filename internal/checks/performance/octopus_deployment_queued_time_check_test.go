@@ -1,9 +1,9 @@
 package performance
 
 import (
-	"github.com/mcasperson/OctopusRecommendationEngine/internal/checks"
-	"github.com/mcasperson/OctopusTerraformTestFramework/octoclient"
-	"github.com/mcasperson/OctopusTerraformTestFramework/test"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/octoclient"
+	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/test"
 	"net/http"
 	"net/http/httptest"
 	"testing"

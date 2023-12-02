@@ -6,7 +6,138 @@ name: Go Build
       - '.github/workflows/*'
   pull_request: {}
 jobs:
+  tests:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        parallel: [10]
+        index: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+
+      - name: Download JUnit Summary from Previous Workflow
+        id: download-artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow_conclusion: success
+          name: junit-test-summary
+          if_no_artifact_found: warn
+          branch: main
+
+      - name: Split integration tests
+        id: test_split
+        uses: hashicorp-forge/go-test-split-action@v1
+        with:
+          index: ${{ matrix.index }}
+          total: ${{ matrix.parallel }}
+          junit-summary: ./junit-test-summary.xml
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+
+      - name: Clone the Terraform provider source
+        run: git clone https://github.com/OctopusDeployLabs/terraform-provider-octopusdeploy.git
+        shell: bash
+
+      - name: Build the Terraform provider from source
+        run: go build -o terraform-provider-octopusdeploy
+        working-directory: terraform-provider-octopusdeploy
+
+      - name: Override the location used by Terraform provider
+        run: |-
+          cat <<EOT >> ~/.terraformrc
+          provider_installation {
+              dev_overrides {
+              "octopusdeploylabs/octopusdeploy" = "${{ github.workspace }}/terraform-provider-octopusdeploy"
+            }
+            direct {}
+          }
+          EOT
+
+      - name: Go test
+        shell: bash
+        env:
+          # Set this to a base64 encoded Octopus license. It is passed to the Octopus docker image, which requires an
+          # encoded license.
+          LICENSE: ${{ secrets.LICENSE }}
+          # Reuse any Terraform plugins between tests
+          TF_PLUGIN_CACHE_DIR: ${{ github.workspace }}
+          OCTOTESTDUMPSTATE: !!str true
+          OCTOTESTDEFAULTSPACEID: Spaces-2
+          TEST_GIT_REPO: ${{ secrets.TEST_GIT_REPO }}
+          TEST_GIT_PASSWORD: ${{ secrets.GIT_CREDENTIAL }}
+          TEST_GIT_USERNAME: ${{ secrets.TEST_GIT_USERNAME }}
+          GOMAXPROCS: 2
+          OCTOTESTRETRYCOUNT: 5
+          TESTCONTAINERS_RYUK_DISABLED: true
+        run: |
+          sudo apt install gotestsum
+          gotestsum --junitfile node-summary.xml --format short-verbose -- -run "${{ steps.test_split.outputs.run }}" -timeout 0 ./...
+
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: junit-test-summary-${{ matrix.index }}
+          path: node-summary.xml
+          retention-days: 1
+
+  tests-combine-summaries:
+    name: Combine Test Reports
+    needs: [ tests ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Install junit-report-merger
+        run: npm install -g junit-report-merger
+
+      - name: Merge reports
+        run: >
+          jrm ./junit-test-summary.xml 
+          "junit-test-summary-0/*.xml" 
+          "junit-test-summary-1/*.xml" 
+          "junit-test-summary-2/*.xml" 
+          "junit-test-summary-3/*.xml" 
+          "junit-test-summary-4/*.xml" 
+          "junit-test-summary-5/*.xml" 
+          "junit-test-summary-6/*.xml" 
+          "junit-test-summary-7/*.xml" 
+          "junit-test-summary-8/*.xml" 
+          "junit-test-summary-9/*.xml"
+
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: junit-test-summary
+          path: ./junit-test-summary.xml
+
+      - name: Report
+        uses: dorny/test-reporter@v1
+        with:
+          name: Go Tests
+          path: junit-test-summary.xml
+          reporter: java-junit
+          fail-on-error: 'true'
+
   build:
+    needs: [ tests-combine-summaries ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -25,8 +156,6 @@ jobs:
           terraform_wrapper: false
       - name: Set up Go
         uses: actions/setup-go@v2
-        with:
-          go-version: 1.20.5
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v0.9.15
         with:
@@ -59,47 +188,6 @@ jobs:
 #        with:
 #          name: Dependencies Updates
 #          path: dependencyUpdates.txt
-      - name: Clone the Terraform provider source
-        run: git clone https://github.com/OctopusDeployLabs/terraform-provider-octopusdeploy.git
-        shell: bash
-      - name: Build the Terraform provider from source
-        run: go build -o terraform-provider-octopusdeploy
-        working-directory: terraform-provider-octopusdeploy
-      - name: Override the location used by Terraform provider
-        run: |-
-          cat <<EOT >> ~/.terraformrc
-          provider_installation {
-              dev_overrides {
-              "octopusdeploylabs/octopusdeploy" = "${{ github.workspace }}/terraform-provider-octopusdeploy"
-            }
-            direct {}
-          }
-          EOT
-      - name: Test
-        run: |
-          go install gotest.tools/gotestsum@latest
-          gotestsum --junitfile results.xml -- -timeout 0 -v ./...
-        shell: bash
-        env:
-          # Set this to a base64 encoded Octopus license. It is passed to the Octopus docker image, which requires an
-          # encoded license.
-          LICENSE: ${{ secrets.LICENSE }}
-          # Reuse any Terraform plugins between tests
-          TF_PLUGIN_CACHE_DIR: ${{ github.workspace }}
-          OCTOTESTDUMPSTATE: !!str true
-          OCTOTESTDEFAULTSPACEID: Spaces-2
-          TEST_GIT_REPO: ${{ secrets.TEST_GIT_REPO }}
-          TEST_GIT_PASSWORD: ${{ secrets.GIT_CREDENTIAL }}
-          TEST_GIT_USERNAME: ${{ secrets.TEST_GIT_USERNAME }}
-          TESTCONTAINERS_RYUK_DISABLED: true
-      - if: always()
-        name: Report
-        uses: dorny/test-reporter@v1
-        with:
-          name: Go Tests
-          path: results.xml
-          reporter: java-junit
-          fail-on-error: 'false'
       - run: go build -ldflags="-X 'main.Version=${{ steps.determine_version.outputs.semVer }}'" -o octolint_linux_amd64 cmd/octolint.go
         env:
           GOOS: linux

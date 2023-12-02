@@ -4,9 +4,9 @@ import (
 	"errors"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/users"
-	"github.com/mcasperson/OctopusRecommendationEngine/internal/checks"
-	"github.com/mcasperson/OctopusTerraformTestFramework/octoclient"
-	"github.com/mcasperson/OctopusTerraformTestFramework/test"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/octoclient"
+	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/test"
 	"path/filepath"
 	"testing"
 )
@@ -34,7 +34,7 @@ func TestPerpetualApiKeys(t *testing.T) {
 			return err
 		}
 
-		newSpaceClient.APIKeys.Create(&users.APIKey{
+		newSpaceClient.APIKeys.Create(&users.CreateAPIKey{
 			APIKey:  "",
 			Created: nil,
 			Purpose: "",
