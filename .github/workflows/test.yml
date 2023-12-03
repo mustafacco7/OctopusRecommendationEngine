@@ -1,0 +1,56 @@
+name: Go Test
+'on':
+  workflow_dispatch: {}
+  schedule:
+    - cron: 0 20 * * 1-5
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+      - name: Set up Go
+        uses: actions/setup-go@v3
+      - name: Install Dependencies
+        run: go get ./...
+        shell: bash
+      - name: Clone the Terraform provider source
+        run: git clone https://github.com/OctopusDeployLabs/terraform-provider-octopusdeploy.git
+        shell: bash
+      - name: Build the Terraform provider from source
+        run: go build -o terraform-provider-octopusdeploy
+        working-directory: terraform-provider-octopusdeploy
+      - name: Override the location used by Terraform provider
+        run: |-
+          cat <<EOT >> ~/.terraformrc
+          provider_installation {
+              dev_overrides {
+              "octopusdeploylabs/octopusdeploy" = "${{ github.workspace }}/terraform-provider-octopusdeploy"
+            }
+            direct {}
+          }
+          EOT
+      - name: Test
+        run: |-
+          go install gotest.tools/gotestsum@latest
+          gotestsum --junitfile results.xml -- -v -timeout 0 -json ./...
+        shell: bash
+        env:
+          # Set this to a base64 encoded Octopus license. It is passed to the Octopus docker image, which requires an
+          # encoded license.
+          LICENSE: ${{ secrets.LICENSE }}
+          # Reuse any Terraform plugins between tests
+          TF_PLUGIN_CACHE_DIR: ${{ github.workspace }}
+          OCTOTESTDUMPSTATE: !!str true
+          OCTOTESTDEFAULTSPACEID: Spaces-2
+          TEST_GIT_REPO: ${{ secrets.TEST_GIT_REPO }}
+          TEST_GIT_PASSWORD: ${{ secrets.GIT_CREDENTIAL }}
+          TEST_GIT_USERNAME: ${{ secrets.TEST_GIT_USERNAME }}
+          GOMAXPROCS: 2
+          OCTOTESTRETRYCOUNT: 5
+          TESTCONTAINERS_RYUK_DISABLED: true
