@@ -264,14 +264,14 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          platform: arm64
+          platforms: arm64
           tags: octopussamples/octolint-linux-arm64:latest
           build-args: Version=${{ steps.determine_version.outputs.semVer }}
       - name: Build and push versioned image arm64
         uses: docker/build-push-action@v5
         with:
           push: true
-          platform: arm64
+          platforms: arm64
           tags: octopussamples/octolint-linux-arm64:${{ steps.determine_version.outputs.semVer }}
           build-args: Version=${{ steps.determine_version.outputs.semVer }}
   build-windows:
