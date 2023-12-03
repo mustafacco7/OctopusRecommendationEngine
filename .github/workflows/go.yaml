@@ -315,7 +315,7 @@ jobs:
           docker build --platform windows/amd64 . -f Dockerfile.windows -t octopussamples/octolint-windows:${{ steps.determine_version.outputs.semVer }}
           docker push octopussamples/octolint-windows:${{ steps.determine_version.outputs.semVer }}
   multiarch-image:
-    needs: [ build-mac, build-windows, build ]
+    needs: [ build-windows, build ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
