@@ -36,7 +36,7 @@ resource "octopusdeploy_user_role" "octolintrole" {
   granted_space_permissions     = [
     "AccountView", "ActionTemplateView", "ArtifactView", "CertificateView", "DeploymentView", "EnvironmentView",
     "EventView", "FeedView", "GitCredentialView", "InsightsReportView", "InterruptionView", "LibraryVariableSetView",
-    "LifecycleView", "MachinePolicyView", "MachineView", "ProcessView", "projectGroupView", "ProjectView", "ProxyView",
+    "LifecycleView", "MachinePolicyView", "MachineView", "ProcessView", "ProjectGroupView", "ProjectView", "ProxyView",
     "ReleaseView", "RunbookRunView", "RunbookView", "SubscriptionView", "TaskView", "TeamView", "TenantView",
     "TriggerView", "VariableView", "VariableViewUnscoped", "WorkerView"
   ]
