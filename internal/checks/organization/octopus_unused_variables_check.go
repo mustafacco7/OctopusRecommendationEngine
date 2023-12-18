@@ -73,6 +73,11 @@ func (o OctopusUnusedVariablesCheck) Execute() (checks.OctopusCheckResult, error
 				continue
 			}
 
+			// Ignore variables that look like groups
+			if strings.Index(v.Name, "[") != -1 {
+				continue
+			}
+
 			used := o.naiveStepVariableScan(deploymentSteps, v) || o.naiveVariableSetVariableScan(variableSet, v)
 
 			if !used {
