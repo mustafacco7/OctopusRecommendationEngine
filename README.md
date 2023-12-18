@@ -41,7 +41,7 @@ echo "##octopus[stdout-default]"
 
 docker run -t --rm \
     octopussamples/octolint \
-    -spinner false \
+    -spinner=false \
     -url #{Octopus.Web.ServerUri} \
     -apiKey #{ApiKey} \
     -space Spaces-282
