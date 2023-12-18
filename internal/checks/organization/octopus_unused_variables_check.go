@@ -48,13 +48,19 @@ func (o OctopusUnusedVariablesCheck) Execute() (checks.OctopusCheckResult, error
 		variableSet, err := o.client.Variables.GetAll(p.ID)
 
 		if err != nil {
-			return o.errorHandler.HandleError(o.Id(), checks.Organization, err)
+			if !o.errorHandler.ShouldContinue(err) {
+				return nil, err
+			}
+			continue
 		}
 
 		deploymentSteps, err := o.getDeploymentSteps(p)
 
 		if err != nil {
-			return o.errorHandler.HandleError(o.Id(), checks.Organization, err)
+			if !o.errorHandler.ShouldContinue(err) {
+				return nil, err
+			}
+			continue
 		}
 
 		for _, v := range variableSet.Variables {
