@@ -32,6 +32,21 @@ docker run -t --rm octopussamples/octolint \
     -space Spaces-1
 ```
 
+You can run octolint as part of an Octopus deployment process or runbook:
+
+```bash
+echo "##octopus[stdout-verbose]"
+docker pull octopussamples/octolint 2>&1
+echo "##octopus[stdout-default]"
+
+docker run -t --rm \
+    octopussamples/octolint \
+    -spinner false \
+    -url #{Octopus.Web.ServerUri} \
+    -apiKey #{ApiKey} \
+    -space Spaces-282
+```
+
 ## Permissions
 
 `octolint` only requires read access - it does not modify anything on the server.
