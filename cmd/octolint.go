@@ -23,10 +23,13 @@ import (
 var Version = "development"
 
 func main() {
-	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
-	s.Start()
+	version, url, space, apiKey, skipTests, verboseErrors, spinnerEnabled := parseArgs()
 
-	version, url, space, apiKey, skipTests, verboseErrors := parseArgs()
+	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
+
+	if spinnerEnabled {
+		s.Start()
+	}
 
 	if version {
 		fmt.Println("Version: " + Version)
@@ -88,7 +91,10 @@ func main() {
 		errorExit("Failed to generate the report")
 	}
 
-	s.Stop()
+	if spinnerEnabled {
+		s.Stop()
+	}
+
 	fmt.Println(report)
 }
 
@@ -97,7 +103,7 @@ func errorExit(message string) {
 	os.Exit(1)
 }
 
-func parseArgs() (bool, string, string, string, string, bool) {
+func parseArgs() (bool, string, string, string, string, bool, bool) {
 	var url string
 	flag.StringVar(&url, "url", "", "The Octopus URL e.g. https://myinstance.octopus.app")
 
@@ -116,6 +122,9 @@ func parseArgs() (bool, string, string, string, string, bool) {
 	var version bool
 	flag.BoolVar(&version, "version", false, "Print the version")
 
+	var spinner bool
+	flag.BoolVar(&spinner, "spinner", true, "Display the spinner")
+
 	flag.Parse()
 
 	if url == "" {
@@ -126,7 +135,7 @@ func parseArgs() (bool, string, string, string, string, bool) {
 		apiKey = os.Getenv("OCTOPUS_CLI_API_KEY")
 	}
 
-	return version, url, space, apiKey, skipTests, verboseErrors
+	return version, url, space, apiKey, skipTests, verboseErrors, spinner
 }
 
 func lookupSpaceAsName(octopusUrl string, spaceName string, apiKey string) (string, error) {
