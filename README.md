@@ -44,7 +44,7 @@ docker run -t --rm \
     -spinner=false \
     -url #{Octopus.Web.ServerUri} \
     -apiKey #{ApiKey} \
-    -space Spaces-282
+    -space #{Octopus.Space.Id}
 ```
 
 ## Permissions
