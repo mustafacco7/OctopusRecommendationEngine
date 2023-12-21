@@ -310,8 +310,8 @@ jobs:
       - name: Build and push
         if: ${{ steps.branch-name.outputs.current_branch == 'main' }}
         run: |
-          docker build --platform windows/amd64 . -f Dockerfile.windows2019 -t octopussamples/octolint-windows2019:${{ steps.determine_version.outputs.semVer }}
-          docker push octopussamples/octolint-windows2019:${{ steps.determine_version.outputs.semVer }}
+          docker build --platform windows/amd64 . -f Dockerfile.windows2019 -t octopussamples/octolint-windows-2019:${{ steps.determine_version.outputs.semVer }}
+          docker push octopussamples/octolint-windows-2019:${{ steps.determine_version.outputs.semVer }}
 
       - name: Build and push latest 2022
         if: ${{ steps.branch-name.outputs.current_branch == 'main' }}
@@ -321,8 +321,8 @@ jobs:
       - name: Build and push
         if: ${{ steps.branch-name.outputs.current_branch == 'main' }}
         run: |
-          docker build --platform windows/amd64 . -f Dockerfile.windows2022 -t octopussamples/octolint-windows2022:${{ steps.determine_version.outputs.semVer }}
-          docker push octopussamples/octolint-windows2022:${{ steps.determine_version.outputs.semVer }}
+          docker build --platform windows/amd64 . -f Dockerfile.windows2022 -t octopussamples/octolint-windows-2022:${{ steps.determine_version.outputs.semVer }}
+          docker push octopussamples/octolint-windows-2022:${{ steps.determine_version.outputs.semVer }}
   multiarch-image:
     needs: [ build-windows, build ]
     runs-on: ubuntu-latest
