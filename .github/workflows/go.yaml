@@ -273,7 +273,7 @@ jobs:
           tags: octopussamples/octolint-linux-arm64:${{ steps.determine_version.outputs.semVer }}
           build-args: Version=${{ steps.determine_version.outputs.semVer }}
   build-windows:
-    runs-on: windows-2019
+    runs-on: windows-latest
     steps:
       - name: Set up Go
         uses: actions/setup-go@v3
