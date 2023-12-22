@@ -317,7 +317,7 @@ jobs:
         if: ${{ steps.branch-name.outputs.current_branch == 'main' }}
         run: |
           docker build --platform windows/amd64 . -f Dockerfile.windows2022 -t octopussamples/octolint-windows-2022:latest
-          docker push octopussamples/octolint-windows-2019:latest
+          docker push octopussamples/octolint-windows-2022:latest
       - name: Build and push
         if: ${{ steps.branch-name.outputs.current_branch == 'main' }}
         run: |
