@@ -47,6 +47,29 @@ docker run -t --rm \
     -space #{Octopus.Space.Id}
 ```
 
+## Capturing output in Octopus
+
+The easiest way to capture the output of Octolint in Octopus is to capture the standard output in a variable, and use the variable
+to create an [output variable](https://octopus.com/docs/projects/variables/output-variables).
+
+The example below shows how to achieve this in Bash:
+
+```bash
+echo "##octopus[stdout-verbose]"
+docker pull octopussamples/octolint 2>&1
+echo "##octopus[stdout-default]"
+
+RESULTS=$(docker run -t --rm \
+    octopussamples/octolint \
+    -spinner=false \
+    -url "#{Octopus.Web.ServerUri}" \
+    -apiKey "#{ApiKey}" \
+    -space "#{Octopus.Space.Id}")
+    
+set_octopusvariable "OctolintResults" "$RESULTS"
+echo $RESULTS
+```
+
 ## Permissions
 
 `octolint` only requires read access - it does not modify anything on the server.
