@@ -49,7 +49,7 @@ docker run -t --rm \
 
 ## Capturing output in Octopus
 
-The easiest way to capture the output of Octolint in Octopus is to capture the standard output in a variable, and use the variable
+The easiest way to capture the output of Octolint in Octopus is to capture the standard output in a variable and use the variable
 to create an [output variable](https://octopus.com/docs/projects/variables/output-variables).
 
 The example below shows how to achieve this in Bash:
