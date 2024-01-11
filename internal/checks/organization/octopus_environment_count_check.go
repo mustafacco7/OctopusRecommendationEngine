@@ -8,7 +8,7 @@ import (
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
 )
 
-const maxEnvironments = 20
+const maxEnvironments = 10
 
 // OctopusEnvironmentCountCheck checks to see if too many environments have been created in a space.
 type OctopusEnvironmentCountCheck struct {
