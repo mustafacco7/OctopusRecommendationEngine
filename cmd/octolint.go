@@ -22,46 +22,56 @@ import (
 
 var Version = "development"
 
+type octolintConfig struct {
+	Url           string
+	Space         string
+	ApiKey        string
+	SkipTests     string
+	VerboseErrors bool
+	Version       bool
+	Spinner       bool
+}
+
 func main() {
-	version, url, space, apiKey, skipTests, verboseErrors, spinnerEnabled := parseArgs()
+	config := parseArgs()
 
 	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
 
-	if spinnerEnabled {
+	if config.Spinner {
 		s.Start()
 	}
 
-	if version {
+	if config.Version {
 		fmt.Println("Version: " + Version)
 		os.Exit(0)
 	}
 
-	if url == "" {
+	if config.Url == "" {
 		errorExit("You must specify the URL with the -url argument")
 	}
 
-	if apiKey == "" {
+	if config.ApiKey == "" {
 		errorExit("You must specify the API key with the -apiKey argument")
 	}
 
-	if !strings.HasPrefix(space, "Spaces-") {
-		spaceId, err := lookupSpaceAsName(url, space, apiKey)
+	if !strings.HasPrefix(config.Space, "Spaces-") {
+		spaceId, err := lookupSpaceAsName(config.Url, config.Space, config.ApiKey)
 
 		if err != nil {
 			errorExit("Failed to create the Octopus client")
 		}
 
-		space = spaceId
+		config.Space = spaceId
 	}
 
-	client, err := octoclient.CreateClient(url, space, apiKey)
+	client, err := octoclient.CreateClient(config.Url, config.Space, config.ApiKey)
 
 	if err != nil {
 		errorExit("Failed to create the Octopus client. Check that the url, api key, and space are correct.")
 	}
 
-	factory := factory.NewOctopusCheckFactory(client, url, space)
-	checkCollection, err := factory.BuildAllChecks(skipTests)
+	factory := factory.NewOctopusCheckFactory(client, config.Url, config.Space)
+	checkCollection, err := factory.BuildAllChecks(config.SkipTests)
 
 	if err != nil {
 		errorExit("Failed to create the checks")
@@ -70,7 +80,7 @@ func main() {
 	executor := executor.NewOctopusCheckExecutor()
 	results, err := executor.ExecuteChecks(checkCollection, func(check checks.OctopusCheck, err error) error {
 		fmt.Fprintf(os.Stderr, "Failed to execute check "+check.Id())
-		if verboseErrors {
+		if config.VerboseErrors {
 			fmt.Println("##octopus[stdout-verbose]")
 			fmt.Println(err.Error())
 			fmt.Println("##octopus[stdout-default]")
@@ -91,7 +101,7 @@ func main() {
 		errorExit("Failed to generate the report")
 	}
 
-	if spinnerEnabled {
+	if config.Spinner {
 		s.Stop()
 	}
 
@@ -103,39 +113,28 @@ func errorExit(message string) {
 	os.Exit(1)
 }
 
-func parseArgs() (bool, string, string, string, string, bool, bool) {
-	var url string
-	flag.StringVar(&url, "url", "", "The Octopus URL e.g. https://myinstance.octopus.app")
+func parseArgs() *octolintConfig {
+	config := octolintConfig{}
 
-	var space string
-	flag.StringVar(&space, "space", "", "The Octopus space name or ID")
-
-	var apiKey string
-	flag.StringVar(&apiKey, "apiKey", "", "The Octopus api key")
-
-	var skipTests string
-	flag.StringVar(&skipTests, "skipTests", "", "A comma separated list of tests to skip")
-
-	var verboseErrors bool
-	flag.BoolVar(&verboseErrors, "verboseErrors", false, "Print error details as verbose logs in Octopus")
-
-	var version bool
-	flag.BoolVar(&version, "version", false, "Print the version")
-
-	var spinner bool
-	flag.BoolVar(&spinner, "spinner", true, "Display the spinner")
+	flag.StringVar(&config.Url, "url", "", "The Octopus URL e.g. https://myinstance.octopus.app")
+	flag.StringVar(&config.Space, "space", "", "The Octopus space name or ID")
+	flag.StringVar(&config.ApiKey, "apiKey", "", "The Octopus api key")
+	flag.StringVar(&config.SkipTests, "skipTests", "", "A comma separated list of tests to skip")
+	flag.BoolVar(&config.VerboseErrors, "verboseErrors", false, "Print error details as verbose logs in Octopus")
+	flag.BoolVar(&config.Version, "version", false, "Print the version")
+	flag.BoolVar(&config.Spinner, "spinner", true, "Display the spinner")
 
 	flag.Parse()
 
-	if url == "" {
-		url = os.Getenv("OCTOPUS_CLI_SERVER")
+	if config.Url == "" {
+		config.Url = os.Getenv("OCTOPUS_CLI_SERVER")
 	}
 
-	if apiKey == "" {
-		apiKey = os.Getenv("OCTOPUS_CLI_API_KEY")
+	if config.ApiKey == "" {
+		config.ApiKey = os.Getenv("OCTOPUS_CLI_API_KEY")
 	}
 
-	return version, url, space, apiKey, skipTests, verboseErrors, spinner
+	return &config
 }
 
 func lookupSpaceAsName(octopusUrl string, spaceName string, apiKey string) (string, error) {
