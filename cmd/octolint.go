@@ -9,6 +9,9 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/spaces"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/factory"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/organization"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/defaults"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/executor"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/reporters"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/octoclient"
@@ -22,16 +25,6 @@ import (
 )
 
 var Version = "development"
-
-type octolintConfig struct {
-	Url           string
-	Space         string
-	ApiKey        string
-	SkipTests     string
-	VerboseErrors bool
-	Version       bool
-	Spinner       bool
-}
 
 func main() {
 	config, err := parseArgs()
@@ -76,7 +69,7 @@ func main() {
 	}
 
 	factory := factory.NewOctopusCheckFactory(client, config.Url, config.Space)
-	checkCollection, err := factory.BuildAllChecks(config.SkipTests)
+	checkCollection, err := factory.BuildAllChecks(config)
 
 	if err != nil {
 		errorExit("Failed to create the checks")
@@ -118,8 +111,8 @@ func errorExit(message string) {
 	os.Exit(1)
 }
 
-func parseArgs() (*octolintConfig, error) {
-	config := octolintConfig{}
+func parseArgs() (*config.OctolintConfig, error) {
+	config := config.OctolintConfig{}
 
 	flag.StringVar(&config.Url, "url", "", "The Octopus URL e.g. https://myinstance.octopus.app")
 	flag.StringVar(&config.Space, "space", "", "The Octopus space name or ID")
@@ -128,6 +121,7 @@ func parseArgs() (*octolintConfig, error) {
 	flag.BoolVar(&config.VerboseErrors, "verboseErrors", false, "Print error details as verbose logs in Octopus")
 	flag.BoolVar(&config.Version, "version", false, "Print the version")
 	flag.BoolVar(&config.Spinner, "spinner", true, "Display the spinner")
+	flag.IntVar(&config.MaxEnvironments, "maxEnvironments", defaults.MaxEnvironments, "Maximum number of environments for the "+organization.OctopusEnvironmentCountCheckName+" check")
 
 	flag.Parse()
 

@@ -6,6 +6,7 @@ import (
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/organization"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/performance"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/security"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"strings"
@@ -24,13 +25,13 @@ func NewOctopusCheckFactory(client *client.Client, url string, space string) Oct
 }
 
 // BuildAllChecks creates new instances of all the checks and returns them as an array.
-func (o OctopusCheckFactory) BuildAllChecks(skipChecks string) ([]checks.OctopusCheck, error) {
-	skipChecksSlice := lo.Map(strings.Split(skipChecks, ","), func(item string, index int) string {
+func (o OctopusCheckFactory) BuildAllChecks(config *config.OctolintConfig) ([]checks.OctopusCheck, error) {
+	skipChecksSlice := lo.Map(strings.Split(config.SkipTests, ","), func(item string, index int) string {
 		return strings.TrimSpace(item)
 	})
 
 	allChecks := []checks.OctopusCheck{
-		organization.NewOctopusEnvironmentCountCheck(o.client, o.errorHandler),
+		organization.NewOctopusEnvironmentCountCheck(o.client, config, o.errorHandler),
 		organization.NewOctopusDefaultProjectGroupCountCheck(o.client, o.errorHandler),
 		organization.NewOctopusEmptyProjectCheck(o.client, o.errorHandler),
 		organization.NewOctopusUnusedVariablesCheck(o.client, o.errorHandler),
