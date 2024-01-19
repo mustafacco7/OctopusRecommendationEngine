@@ -47,6 +47,35 @@ docker run -t --rm \
     -space #{Octopus.Space.Id}
 ```
 
+## Configuration files and environment variables
+
+All program arguments can be defined as environment variables with the prefix `OCTOLINT_` or in a YAML file called
+`octolint.yaml` saved alongside the executable.
+
+For example, the maximum number of environments can be passed as a command line argument:
+
+```bash
+./octolint -maxEnvironments 5
+```
+
+Or defined in an environment variable:
+
+```bash
+OCTOLINT_MAXENVIRONMENTS=5 ./octolint
+```
+
+Or defined in a file called `octolint.yaml`:
+
+```yaml
+maxEnvironments: 5
+```
+
+The order of precedence from lowest to highest is:
+* Default values
+* Config file
+* Environment variable
+* Command line arguments
+
 ## Capturing output in Octopus
 
 The easiest way to capture the output of Octolint in Octopus is to capture the standard output in a variable and use the variable
