@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/octoclient"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/test"
 	"path/filepath"
@@ -26,7 +27,7 @@ func TestNormalEnvironmentCount(t *testing.T) {
 			return err
 		}
 
-		check := NewOctopusEnvironmentCountCheck(newSpaceClient, checks.OctopusClientPermissiveErrorHandler{})
+		check := NewOctopusEnvironmentCountCheck(newSpaceClient, &config.OctolintConfig{MaxEnvironments: 10}, checks.OctopusClientPermissiveErrorHandler{})
 
 		result, err := check.Execute()
 
@@ -59,7 +60,7 @@ func TestExcessiveEnvironmentCount(t *testing.T) {
 			return err
 		}
 
-		check := NewOctopusEnvironmentCountCheck(newSpaceClient, checks.OctopusClientPermissiveErrorHandler{})
+		check := NewOctopusEnvironmentCountCheck(newSpaceClient, &config.OctolintConfig{MaxEnvironments: 10}, checks.OctopusClientPermissiveErrorHandler{})
 
 		result, err := check.Execute()
 
