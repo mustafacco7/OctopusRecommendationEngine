@@ -13,6 +13,7 @@ import (
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/reporters"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/octoclient"
 	"github.com/briandowns/spinner"
+	"github.com/spf13/viper"
 	"net/http"
 	"net/url"
 	"os"
@@ -33,7 +34,11 @@ type octolintConfig struct {
 }
 
 func main() {
-	config := parseArgs()
+	config, err := parseArgs()
+
+	if err != nil {
+		errorExit(err.Error())
+	}
 
 	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
 
@@ -113,7 +118,7 @@ func errorExit(message string) {
 	os.Exit(1)
 }
 
-func parseArgs() *octolintConfig {
+func parseArgs() (*octolintConfig, error) {
 	config := octolintConfig{}
 
 	flag.StringVar(&config.Url, "url", "", "The Octopus URL e.g. https://myinstance.octopus.app")
@@ -126,6 +131,12 @@ func parseArgs() *octolintConfig {
 
 	flag.Parse()
 
+	err := overrideArgs()
+
+	if err != nil {
+		return nil, err
+	}
+
 	if config.Url == "" {
 		config.Url = os.Getenv("OCTOPUS_CLI_SERVER")
 	}
@@ -134,7 +145,70 @@ func parseArgs() *octolintConfig {
 		config.ApiKey = os.Getenv("OCTOPUS_CLI_API_KEY")
 	}
 
-	return &config
+	return &config, nil
+}
+
+// Inspired by https://github.com/carolynvs/stingoftheviper
+// Viper needs manual handling to implement reading settings from env vars, config files, and from the command line
+func overrideArgs() error {
+	v := viper.New()
+
+	// Set the base name of the config file, without the file extension.
+	v.SetConfigName("octolint")
+
+	// Set as many paths as you like where viper should look for the
+	// config file. We are only looking in the current working directory.
+	v.AddConfigPath(".")
+
+	// Attempt to read the config file, gracefully ignoring errors
+	// caused by a config file not being found. Return an error
+	// if we cannot parse the config file.
+	if err := v.ReadInConfig(); err != nil {
+		// It's okay if there isn't a config file
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return err
+		}
+	}
+
+	// When we bind flags to environment variables expect that the
+	// environment variables are prefixed, e.g. a flag like --number
+	// binds to an environment variable STING_NUMBER. This helps
+	// avoid conflicts.
+	v.SetEnvPrefix("octolint")
+
+	// Environment variables can't have dashes in them, so bind them to their equivalent
+	// keys with underscores, e.g. --favorite-color to STING_FAVORITE_COLOR
+	v.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
+
+	// Bind to environment variables
+	// Works great for simple config names, but needs help for names
+	// like --favorite-color which we fix in the bindFlags function
+	v.AutomaticEnv()
+
+	// Bind the current command's flags to viper
+	return bindFlags(v)
+}
+
+// Bind each flag to its associated viper configuration (config file and environment variable)
+func bindFlags(v *viper.Viper) (funErr error) {
+	var funcError error = nil
+
+	flag.VisitAll(func(allFlags *flag.Flag) {
+		defined := false
+		flag.Visit(func(definedFlag *flag.Flag) {
+			if definedFlag.Name == allFlags.Name {
+				defined = true
+			}
+		})
+
+		if !defined && v.IsSet(allFlags.Name) {
+			configName := strings.ReplaceAll(allFlags.Name, "-", "")
+			err := flag.Set(allFlags.Name, v.GetString(configName))
+			funcError = errors.Join(funcError, err)
+		}
+	})
+
+	return funcError
 }
 
 func lookupSpaceAsName(octopusUrl string, spaceName string, apiKey string) (string, error) {
