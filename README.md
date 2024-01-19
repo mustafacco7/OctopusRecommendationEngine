@@ -58,7 +58,7 @@ For example, the maximum number of environments can be passed as a command line 
 ./octolint -maxEnvironments 5
 ```
 
-Or defined in an environment variable:
+Or defined in an environment variable (environment variables are case insensitive):
 
 ```bash
 OCTOLINT_MAXENVIRONMENTS=5 ./octolint
