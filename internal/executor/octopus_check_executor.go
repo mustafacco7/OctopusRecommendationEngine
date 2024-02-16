@@ -31,7 +31,9 @@ func (o OctopusCheckExecutor) ExecuteChecks(checkCollection []checks.OctopusChec
 					return err
 				}
 
-				checkResults = append(checkResults, result)
+				if result != nil {
+					checkResults = append(checkResults, result)
+				}
 
 				return nil
 			}, retry.Attempts(3))

@@ -9,6 +9,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/spaces"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/factory"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/naming"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/organization"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/defaults"
@@ -122,6 +123,7 @@ func parseArgs() (*config.OctolintConfig, error) {
 	flag.BoolVar(&config.Version, "version", false, "Print the version")
 	flag.BoolVar(&config.Spinner, "spinner", true, "Display the spinner")
 	flag.IntVar(&config.MaxEnvironments, "maxEnvironments", defaults.MaxEnvironments, "Maximum number of environments for the "+organization.OctopusEnvironmentCountCheckName+" check")
+	flag.StringVar(&config.ContainerImageRegex, "containerImageRegex", "", "The regular expression used to validate container images for the "+naming.OctoLintContainerImageName+" check")
 
 	flag.Parse()
 

@@ -11,4 +11,7 @@ type OctolintConfig struct {
 
 	// These values are used to configure individual checks
 	MaxEnvironments int
+
+	// Container image regex
+	ContainerImageRegex string
 }

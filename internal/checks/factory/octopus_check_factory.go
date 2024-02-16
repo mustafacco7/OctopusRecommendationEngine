@@ -3,6 +3,7 @@ package factory
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/naming"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/organization"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/performance"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/security"
@@ -47,6 +48,7 @@ func (o OctopusCheckFactory) BuildAllChecks(config *config.OctolintConfig) ([]ch
 		security.NewOctopusPerpetualApiKeysCheck(o.client, o.errorHandler),
 		security.NewOctopusDuplicatedGitCredentialsCheck(o.client, o.errorHandler),
 		performance.NewOctopusDeploymentQueuedTimeCheck(o.client, o.url, o.space, o.errorHandler),
+		naming.NewOctopusProjectContainerImageRegex(o.client, config, o.errorHandler),
 	}
 
 	return lo.Filter(allChecks, func(item checks.OctopusCheck, index int) bool {

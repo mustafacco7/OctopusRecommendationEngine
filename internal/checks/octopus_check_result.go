@@ -10,6 +10,7 @@ const (
 
 const (
 	Organization string = "Organization"
+	Naming       string = "Naming"
 	Security            = "Security"
 	Performance         = "Performance"
 	Optimization        = "Optimization"
