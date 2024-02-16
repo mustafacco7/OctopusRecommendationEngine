@@ -90,7 +90,7 @@ func (o OctopusProjectContainerImageRegex) Execute() (checks.OctopusCheckResult,
 
 	if len(actionsWithInvalidImages) > 0 {
 		return checks.NewOctopusCheckResultImpl(
-			"The following project actions have invalid container images:\n"+strings.Join(actionsWithInvalidImages, "\n"),
+			"The following project actions do not match the regex "+o.config.ContainerImageRegex+":\n"+strings.Join(actionsWithInvalidImages, "\n"),
 			o.Id(),
 			"",
 			checks.Warning,
