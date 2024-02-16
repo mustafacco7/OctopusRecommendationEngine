@@ -119,6 +119,7 @@ func parseArgs() (*config.OctolintConfig, error) {
 	flag.StringVar(&config.Space, "space", "", "The Octopus space name or ID")
 	flag.StringVar(&config.ApiKey, "apiKey", "", "The Octopus api key")
 	flag.StringVar(&config.SkipTests, "skipTests", "", "A comma separated list of tests to skip")
+	flag.StringVar(&config.ConfigFile, "configFile", "octolint", "The name of the configuration file to use. Defaults to octolint.yaml")
 	flag.BoolVar(&config.VerboseErrors, "verboseErrors", false, "Print error details as verbose logs in Octopus")
 	flag.BoolVar(&config.Version, "version", false, "Print the version")
 	flag.BoolVar(&config.Spinner, "spinner", true, "Display the spinner")
@@ -131,7 +132,7 @@ func parseArgs() (*config.OctolintConfig, error) {
 
 	flag.Parse()
 
-	err := overrideArgs()
+	err := overrideArgs(config.ConfigFile)
 
 	if err != nil {
 		return nil, err
@@ -150,11 +151,11 @@ func parseArgs() (*config.OctolintConfig, error) {
 
 // Inspired by https://github.com/carolynvs/stingoftheviper
 // Viper needs manual handling to implement reading settings from env vars, config files, and from the command line
-func overrideArgs() error {
+func overrideArgs(configFile string) error {
 	v := viper.New()
 
 	// Set the base name of the config file, without the file extension.
-	v.SetConfigName("octolint")
+	v.SetConfigName(configFile)
 
 	// Set as many paths as you like where viper should look for the
 	// config file. We are only looking in the current working directory.
@@ -196,7 +197,7 @@ func bindFlags(v *viper.Viper) (funErr error) {
 	flag.VisitAll(func(allFlags *flag.Flag) {
 		defined := false
 		flag.Visit(func(definedFlag *flag.Flag) {
-			if definedFlag.Name == allFlags.Name {
+			if definedFlag.Name == allFlags.Name && definedFlag.Name != "configFile" {
 				defined = true
 			}
 		})
