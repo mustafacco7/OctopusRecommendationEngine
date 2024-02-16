@@ -1,4 +1,6 @@
 # These are the rules applied to sample projects created and distributed by Octopus.
+# Call octolint with:
+# ./octolint -configPath policies -configFile octopus_samples
 
 # Use the worker tool images, as these are updated more regularly than the default worker tools
 containerImageRegex: octopuslabs/.+
