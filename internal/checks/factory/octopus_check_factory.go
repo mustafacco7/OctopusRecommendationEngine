@@ -50,6 +50,7 @@ func (o OctopusCheckFactory) BuildAllChecks(config *config.OctolintConfig) ([]ch
 		performance.NewOctopusDeploymentQueuedTimeCheck(o.client, o.url, o.space, o.errorHandler),
 		naming.NewOctopusProjectContainerImageRegex(o.client, config, o.errorHandler),
 		naming.NewOctopusInvalidVariableNameCheck(o.client, config, o.errorHandler),
+		naming.NewOctopusInvalidTargetName(o.client, config, o.errorHandler),
 	}
 
 	return lo.Filter(allChecks, func(item checks.OctopusCheck, index int) bool {

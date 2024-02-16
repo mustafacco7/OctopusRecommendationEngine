@@ -16,7 +16,8 @@ import (
 )
 
 var linkOptions = regexp.MustCompile(`\{.*?}`)
-var OctoLintInvalidVariableNames = "OctoLintInvalidVariableNames"
+
+const OctoLintInvalidVariableNames = "OctoLintInvalidVariableNames"
 
 // OctopusInvalidVariableNameCheck checks to see if any project variables are unused.
 type OctopusInvalidVariableNameCheck struct {
@@ -51,7 +52,6 @@ func (o OctopusInvalidVariableNameCheck) Execute() (checks.OctopusCheckResult, e
 	regex, err := regexp.Compile(o.config.VariableNameRegex)
 
 	if err != nil {
-
 		return checks.NewOctopusCheckResultImpl(
 			"The supplied regex "+o.config.VariableNameRegex+" does not compile",
 			o.Id(),
@@ -64,13 +64,6 @@ func (o OctopusInvalidVariableNameCheck) Execute() (checks.OctopusCheckResult, e
 	for _, p := range projects {
 
 		variableSet, err := o.client.Variables.GetAll(p.ID)
-
-		if err != nil {
-			if !o.errorHandler.ShouldContinue(err) {
-				return nil, err
-			}
-			continue
-		}
 
 		if err != nil {
 			if !o.errorHandler.ShouldContinue(err) {

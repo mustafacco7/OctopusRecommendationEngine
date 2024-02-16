@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-var OctoLintContainerImageName = "OctoLintContainerImageName"
+const OctoLintContainerImageName = "OctoLintContainerImageName"
 
 // OctopusProjectContainerImageRegex checks to see if any project has too many steps.
 type OctopusProjectContainerImageRegex struct {

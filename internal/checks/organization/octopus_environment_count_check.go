@@ -9,7 +9,7 @@ import (
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 )
 
-var OctopusEnvironmentCountCheckName = "OctoLintEnvironmentCount"
+const OctopusEnvironmentCountCheckName = "OctoLintEnvironmentCount"
 
 // OctopusEnvironmentCountCheck checks to see if too many environments have been created in a space.
 type OctopusEnvironmentCountCheck struct {
