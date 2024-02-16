@@ -119,7 +119,8 @@ func parseArgs() (*config.OctolintConfig, error) {
 	flag.StringVar(&config.Space, "space", "", "The Octopus space name or ID")
 	flag.StringVar(&config.ApiKey, "apiKey", "", "The Octopus api key")
 	flag.StringVar(&config.SkipTests, "skipTests", "", "A comma separated list of tests to skip")
-	flag.StringVar(&config.ConfigFile, "configFile", "octolint", "The name of the configuration file to use. Defaults to octolint.yaml")
+	flag.StringVar(&config.ConfigFile, "configFile", "octolint", "The name of the configuration file to use. Do not include the extension. Defaults to octolint")
+	flag.StringVar(&config.ConfigPath, "configPath", ".", "The path of the configuration file to use. Defaults to the current directory")
 	flag.BoolVar(&config.VerboseErrors, "verboseErrors", false, "Print error details as verbose logs in Octopus")
 	flag.BoolVar(&config.Version, "version", false, "Print the version")
 	flag.BoolVar(&config.Spinner, "spinner", true, "Display the spinner")
@@ -134,7 +135,7 @@ func parseArgs() (*config.OctolintConfig, error) {
 
 	flag.Parse()
 
-	err := overrideArgs(config.ConfigFile)
+	err := overrideArgs(config.ConfigPath, config.ConfigFile)
 
 	if err != nil {
 		return nil, err
@@ -153,7 +154,7 @@ func parseArgs() (*config.OctolintConfig, error) {
 
 // Inspired by https://github.com/carolynvs/stingoftheviper
 // Viper needs manual handling to implement reading settings from env vars, config files, and from the command line
-func overrideArgs(configFile string) error {
+func overrideArgs(configPath string, configFile string) error {
 	v := viper.New()
 
 	// Set the base name of the config file, without the file extension.
@@ -161,7 +162,7 @@ func overrideArgs(configFile string) error {
 
 	// Set as many paths as you like where viper should look for the
 	// config file. We are only looking in the current working directory.
-	v.AddConfigPath(".")
+	v.AddConfigPath(configPath)
 
 	// Attempt to read the config file, gracefully ignoring errors
 	// caused by a config file not being found. Return an error
@@ -199,7 +200,7 @@ func bindFlags(v *viper.Viper) (funErr error) {
 	flag.VisitAll(func(allFlags *flag.Flag) {
 		defined := false
 		flag.Visit(func(definedFlag *flag.Flag) {
-			if definedFlag.Name == allFlags.Name && definedFlag.Name != "configFile" {
+			if definedFlag.Name == allFlags.Name && definedFlag.Name != "configFile" && definedFlag.Name != "configPath" {
 				defined = true
 			}
 		})

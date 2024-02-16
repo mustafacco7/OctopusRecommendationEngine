@@ -1,0 +1,16 @@
+# These are the rules applied to sample projects created and distributed by Octopus.
+
+# Use the worker tool images, as these are updated more regularly than the default worker tools
+containerImageRegex: octopuslabs/.+
+# Variable names should be namespaced e.g. Kubernetes.Ingress.Path
+variableNameRegex: (.+)\.(.+)
+# Variable names should be namespaced e.g. Kubernetes.Development
+targetNameRegex: (.+)\.(.+)
+# Target roles should be namespaced e.g. Kubernetes.EKS.ReferenceArchitecture
+targetRoleRegex: (.+)\.(.+)
+# This is a fixed string that the release template needs to match
+projectReleaseTemplateRegex: "#\\{Octopus\\.Date\\.Year\\}\\.#\\{Octopus\\.Date\\.Month\\}\\.#\\{Octopus\\.Date\\.Day\\}\\.#\\{Octopus\\.Time\\.Hour\\}"
+# All steps need to use the ubuntu worker
+projectStepWorkerPoolRegex: Hosted Ubuntu
+# This is a list of valid lifecycle names
+lifecycleNameRegex: "Default Lifecycle|Feature Branches"
