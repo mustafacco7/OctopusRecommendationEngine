@@ -33,4 +33,5 @@ type OctolintConfig struct {
 	ScriptModuleNameRegex       string
 	ProjectGroupNameRegex       string
 	ProjectNameRegex            string
+	LifecycleNameRegex          string
 }
