@@ -51,6 +51,8 @@ func (o OctopusCheckFactory) BuildAllChecks(config *config.OctolintConfig) ([]ch
 		naming.NewOctopusProjectContainerImageRegex(o.client, config, o.errorHandler),
 		naming.NewOctopusInvalidVariableNameCheck(o.client, config, o.errorHandler),
 		naming.NewOctopusInvalidTargetName(o.client, config, o.errorHandler),
+		naming.NewOctopusInvalidTargetRole(o.client, config, o.errorHandler),
+		naming.NewOctopusProjectReleaseTemplateRegex(o.client, config, o.errorHandler),
 	}
 
 	return lo.Filter(allChecks, func(item checks.OctopusCheck, index int) bool {

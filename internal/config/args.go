@@ -10,8 +10,10 @@ type OctolintConfig struct {
 	Spinner       bool
 
 	// These values are used to configure individual checks
-	MaxEnvironments     int
-	ContainerImageRegex string
-	VariableNameRegex   string
-	TargetNameRegex     string
+	MaxEnvironments      int
+	ContainerImageRegex  string
+	VariableNameRegex    string
+	TargetNameRegex      string
+	TargetRoleRegex      string
+	ReleaseTemplateRegex string
 }
