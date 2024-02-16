@@ -76,12 +76,12 @@ func (o OctopusProjectContainerImageRegex) Execute() (checks.OctopusCheckResult,
 
 		for _, s := range deploymentProcess.Steps {
 			for _, a := range s.Actions {
-				if a.Container == nil {
+				if a.Container == nil || strings.TrimSpace(a.Container.Image) == "" {
 					continue
 				}
 
 				if !regex.Match([]byte(a.Container.Image)) {
-					actionsWithInvalidImages = append(actionsWithInvalidImages, p.Name+"/"+a.Name+"/"+a.Container.Image)
+					actionsWithInvalidImages = append(actionsWithInvalidImages, p.Name+"/"+a.Name+": "+a.Container.Image)
 				}
 			}
 		}
