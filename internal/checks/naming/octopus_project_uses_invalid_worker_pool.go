@@ -119,7 +119,7 @@ func (o OctopusProjectWorkerPoolRegex) Execute() (checks.OctopusCheckResult, err
 
 	if len(actionsWithInvalidImages) > 0 {
 		return checks.NewOctopusCheckResultImpl(
-			"The following project actions do not match the regex "+o.config.ContainerImageRegex+":\n"+strings.Join(actionsWithInvalidImages, "\n"),
+			"The following project actions use worker pools that do not match the regex "+o.config.ContainerImageRegex+":\n"+strings.Join(actionsWithInvalidImages, "\n"),
 			o.Id(),
 			"",
 			checks.Warning,
@@ -127,7 +127,7 @@ func (o OctopusProjectWorkerPoolRegex) Execute() (checks.OctopusCheckResult, err
 	}
 
 	return checks.NewOctopusCheckResultImpl(
-		"There are no project actions with invalid container images",
+		"There are no actions that use worker pools that do not match the regex "+o.config.ContainerImageRegex,
 		o.Id(),
 		"",
 		checks.Ok,
