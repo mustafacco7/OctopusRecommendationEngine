@@ -14,4 +14,7 @@ type OctolintConfig struct {
 
 	// Container image regex
 	ContainerImageRegex string
+
+	// Variable naming regex
+	VariableNameRegex string
 }
