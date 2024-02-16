@@ -94,7 +94,7 @@ func (o OctopusInvalidVariableNameCheck) Execute() (checks.OctopusCheckResult, e
 	if len(messages) > 0 {
 
 		return checks.NewOctopusCheckResultImpl(
-			"The following variables do not match the regex "+o.config.VariableNameRegex+" \n"+strings.Join(messages, "\n"),
+			"The following variables do not match the regex "+o.config.VariableNameRegex+":\n"+strings.Join(messages, "\n"),
 			o.Id(),
 			"",
 			checks.Warning,
