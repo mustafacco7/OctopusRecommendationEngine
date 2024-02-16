@@ -53,7 +53,7 @@ func (o OctopusInvalidTargetName) Execute() (checks.OctopusCheckResult, error) {
 	allMachines, err := o.client.Machines.GetAll()
 
 	if err != nil {
-		return o.errorHandler.HandleError(o.Id(), checks.Organization, err)
+		return o.errorHandler.HandleError(o.Id(), checks.Naming, err)
 	}
 
 	responses := []string{}
@@ -69,7 +69,7 @@ func (o OctopusInvalidTargetName) Execute() (checks.OctopusCheckResult, error) {
 			o.Id(),
 			"",
 			checks.Warning,
-			checks.Organization), nil
+			checks.Naming), nil
 	}
 
 	return checks.NewOctopusCheckResultImpl(
@@ -77,5 +77,5 @@ func (o OctopusInvalidTargetName) Execute() (checks.OctopusCheckResult, error) {
 		o.Id(),
 		"",
 		checks.Ok,
-		checks.Organization), nil
+		checks.Naming), nil
 }

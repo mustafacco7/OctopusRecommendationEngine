@@ -37,16 +37,16 @@ func (o OctopusProjectReleaseTemplateRegex) Execute() (checks.OctopusCheckResult
 		return nil, errors.New("octoclient is nil")
 	}
 
-	if strings.TrimSpace(o.config.ReleaseTemplateRegex) == "" {
+	if strings.TrimSpace(o.config.ProjectReleaseTemplateRegex) == "" {
 		return nil, nil
 	}
 
-	regex, err := regexp.Compile(o.config.ReleaseTemplateRegex)
+	regex, err := regexp.Compile(o.config.ProjectReleaseTemplateRegex)
 
 	if err != nil {
 
 		return checks.NewOctopusCheckResultImpl(
-			"The supplied regex "+o.config.ReleaseTemplateRegex+" does not compile",
+			"The supplied regex "+o.config.ProjectReleaseTemplateRegex+" does not compile",
 			o.Id(),
 			"",
 			checks.Error,
@@ -56,7 +56,7 @@ func (o OctopusProjectReleaseTemplateRegex) Execute() (checks.OctopusCheckResult
 	projects, err := o.client.Projects.GetAll()
 
 	if err != nil {
-		return o.errorHandler.HandleError(o.Id(), checks.Organization, err)
+		return o.errorHandler.HandleError(o.Id(), checks.Naming, err)
 	}
 
 	results := []string{}
@@ -68,19 +68,19 @@ func (o OctopusProjectReleaseTemplateRegex) Execute() (checks.OctopusCheckResult
 
 	if len(results) > 0 {
 		return checks.NewOctopusCheckResultImpl(
-			"The following project release templates do not match the regex "+o.config.ReleaseTemplateRegex+":\n"+strings.Join(results, "\n"),
+			"The following project release templates do not match the regex "+o.config.ProjectReleaseTemplateRegex+":\n"+strings.Join(results, "\n"),
 			o.Id(),
 			"",
 			checks.Warning,
-			checks.Organization), nil
+			checks.Naming), nil
 	}
 
 	return checks.NewOctopusCheckResultImpl(
-		"All projects match the release templates regex "+o.config.ReleaseTemplateRegex,
+		"All projects match the release templates regex "+o.config.ProjectReleaseTemplateRegex,
 		o.Id(),
 		"",
 		checks.Ok,
-		checks.Organization), nil
+		checks.Naming), nil
 }
 
 func (o OctopusProjectReleaseTemplateRegex) stepsInDeploymentProcess(deploymentProcessID string) (*deployments.DeploymentProcess, error) {

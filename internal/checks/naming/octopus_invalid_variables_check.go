@@ -46,7 +46,7 @@ func (o OctopusInvalidVariableNameCheck) Execute() (checks.OctopusCheckResult, e
 	projects, err := o.client.Projects.GetAll()
 
 	if err != nil {
-		return o.errorHandler.HandleError(o.Id(), checks.Organization, err)
+		return o.errorHandler.HandleError(o.Id(), checks.Naming, err)
 	}
 
 	regex, err := regexp.Compile(o.config.VariableNameRegex)
@@ -91,7 +91,7 @@ func (o OctopusInvalidVariableNameCheck) Execute() (checks.OctopusCheckResult, e
 			o.Id(),
 			"",
 			checks.Warning,
-			checks.Organization), nil
+			checks.Naming), nil
 	}
 
 	return checks.NewOctopusCheckResultImpl(
@@ -99,7 +99,7 @@ func (o OctopusInvalidVariableNameCheck) Execute() (checks.OctopusCheckResult, e
 		o.Id(),
 		"",
 		checks.Ok,
-		checks.Organization), nil
+		checks.Naming), nil
 }
 
 func (o OctopusInvalidVariableNameCheck) getDeploymentSteps(p *projects2.Project) ([]*deployments.DeploymentStep, error) {

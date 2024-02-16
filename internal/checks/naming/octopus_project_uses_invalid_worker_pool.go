@@ -5,48 +5,50 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/workerpools"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
+	"github.com/samber/lo"
 	"regexp"
 	"strings"
 )
 
-const OctoLintContainerImageName = "OctoLintProjectContainerImageName"
+const OctoLintProjectWorkerPool = "OctoLintProjectWorkerPool"
 
-// OctopusProjectContainerImageRegex checks to see if any project has too many steps.
-type OctopusProjectContainerImageRegex struct {
+// OctopusProjectWorkerPoolRegex checks to see if any project has too many steps.
+type OctopusProjectWorkerPoolRegex struct {
 	client       *client.Client
 	errorHandler checks.OctopusClientErrorHandler
 	config       *config.OctolintConfig
 }
 
-func NewOctopusProjectContainerImageRegex(client *client.Client, config *config.OctolintConfig, errorHandler checks.OctopusClientErrorHandler) OctopusProjectContainerImageRegex {
-	return OctopusProjectContainerImageRegex{
+func NewOctopusProjectWorkerPoolRegex(client *client.Client, config *config.OctolintConfig, errorHandler checks.OctopusClientErrorHandler) OctopusProjectWorkerPoolRegex {
+	return OctopusProjectWorkerPoolRegex{
 		client:       client,
 		errorHandler: errorHandler,
 		config:       config,
 	}
 }
 
-func (o OctopusProjectContainerImageRegex) Id() string {
-	return OctoLintContainerImageName
+func (o OctopusProjectWorkerPoolRegex) Id() string {
+	return OctoLintProjectWorkerPool
 }
 
-func (o OctopusProjectContainerImageRegex) Execute() (checks.OctopusCheckResult, error) {
+func (o OctopusProjectWorkerPoolRegex) Execute() (checks.OctopusCheckResult, error) {
 	if o.client == nil {
 		return nil, errors.New("octoclient is nil")
 	}
 
-	if strings.TrimSpace(o.config.ContainerImageRegex) == "" {
+	if strings.TrimSpace(o.config.ProjectStepWorkerPoolRegex) == "" {
 		return nil, nil
 	}
 
-	regex, err := regexp.Compile(o.config.ContainerImageRegex)
+	regex, err := regexp.Compile(o.config.ProjectStepWorkerPoolRegex)
 
 	if err != nil {
 
 		return checks.NewOctopusCheckResultImpl(
-			"The supplied regex "+o.config.ContainerImageRegex+" does not compile",
+			"The supplied regex "+o.config.ProjectStepWorkerPoolRegex+" does not compile",
 			o.Id(),
 			"",
 			checks.Error,
@@ -57,6 +59,21 @@ func (o OctopusProjectContainerImageRegex) Execute() (checks.OctopusCheckResult,
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Naming, err)
+	}
+
+	workerPools, err := o.client.WorkerPools.GetAll()
+
+	if err != nil {
+		return o.errorHandler.HandleError(o.Id(), checks.Naming, err)
+	}
+
+	defaultWorkerPools := lo.Filter(workerPools, func(item *workerpools.WorkerPoolListResult, index int) bool {
+		return item.IsDefault
+	})
+
+	defaultWorkerPool := ""
+	if len(defaultWorkerPools) == 1 {
+		defaultWorkerPool = defaultWorkerPools[0].Name
 	}
 
 	actionsWithInvalidImages := []string{}
@@ -76,12 +93,24 @@ func (o OctopusProjectContainerImageRegex) Execute() (checks.OctopusCheckResult,
 
 		for _, s := range deploymentProcess.Steps {
 			for _, a := range s.Actions {
-				if a.Container == nil || strings.TrimSpace(a.Container.Image) == "" {
+
+				if a.WorkerPoolVariable != "" {
 					continue
 				}
 
-				if !regex.Match([]byte(a.Container.Image)) {
-					actionsWithInvalidImages = append(actionsWithInvalidImages, p.Name+"/"+a.Name+": "+a.Container.Image)
+				if a.WorkerPool == "" {
+					if defaultWorkerPool != "" && !regex.Match([]byte(defaultWorkerPool)) {
+
+						actionsWithInvalidImages = append(actionsWithInvalidImages, p.Name+"/"+a.Name+": "+defaultWorkerPool+" (default)")
+					}
+				} else if !regex.Match([]byte(a.WorkerPool)) {
+					workerPool := lo.Filter(workerPools, func(item *workerpools.WorkerPoolListResult, index int) bool {
+						return item.ID == a.WorkerPool
+					})
+
+					if len(workerPool) == 1 && !regex.Match([]byte(workerPool[0].Name)) {
+						actionsWithInvalidImages = append(actionsWithInvalidImages, p.Name+"/"+a.Name+": "+workerPool[0].Name)
+					}
 				}
 			}
 		}
@@ -105,7 +134,7 @@ func (o OctopusProjectContainerImageRegex) Execute() (checks.OctopusCheckResult,
 		checks.Organization), nil
 }
 
-func (o OctopusProjectContainerImageRegex) stepsInDeploymentProcess(deploymentProcessID string) (*deployments.DeploymentProcess, error) {
+func (o OctopusProjectWorkerPoolRegex) stepsInDeploymentProcess(deploymentProcessID string) (*deployments.DeploymentProcess, error) {
 	if deploymentProcessID == "" {
 		return nil, nil
 	}

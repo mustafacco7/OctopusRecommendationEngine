@@ -128,7 +128,8 @@ func parseArgs() (*config.OctolintConfig, error) {
 	flag.StringVar(&config.VariableNameRegex, "variableNameRegex", "", "The regular expression used to validate variable names for the "+naming.OctoLintInvalidVariableNames+" check")
 	flag.StringVar(&config.TargetNameRegex, "targetNameRegex", "", "The regular expression used to validate target names for the "+naming.OctoLintInvalidTargetNames+" check")
 	flag.StringVar(&config.TargetRoleRegex, "targetRoleRegex", "", "The regular expression used to validate target roles for the "+naming.OctoLintInvalidTargetRoles+" check")
-	flag.StringVar(&config.ReleaseTemplateRegex, "releaseTemplateRegex", "", "The regular expression used to validate project release templates "+naming.OctoLintProjectReleaseTemplate+" check")
+	flag.StringVar(&config.ProjectReleaseTemplateRegex, "projectReleaseTemplateRegex", "", "The regular expression used to validate project release templates for the "+naming.OctoLintProjectReleaseTemplate+" check")
+	flag.StringVar(&config.ProjectStepWorkerPoolRegex, "projectStepWorkerPoolRegex", "", "The regular expression used to validate step worker pools for the  "+naming.OctoLintProjectReleaseTemplate+" check")
 
 	flag.Parse()
 
