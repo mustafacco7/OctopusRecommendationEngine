@@ -32,6 +32,13 @@ func (o OctopusCheckFactory) BuildAllChecks(config *config.OctolintConfig) ([]ch
 	})
 
 	allChecks := []checks.OctopusCheck{
+		security.NewOctopusUnrotatedAccountsCheck(o.client, o.errorHandler),
+		security.NewOctopusDeploymentQueuedByAdminCheck(o.client, o.errorHandler),
+		security.NewOctopusPerpetualApiKeysCheck(o.client, o.errorHandler),
+		security.NewOctopusDuplicatedGitCredentialsCheck(o.client, o.errorHandler),
+		security.NewOctopusInsecureK8sCheck(o.client, o.errorHandler),
+		security.NewOctopusInsecureFeedsCheck(o.client, o.errorHandler),
+		security.NewOctopusInsecureSubscriptionsCheck(o.client, o.errorHandler),
 		organization.NewOctopusEnvironmentCountCheck(o.client, config, o.errorHandler),
 		organization.NewOctopusDefaultProjectGroupCountCheck(o.client, o.errorHandler),
 		organization.NewOctopusEmptyProjectCheck(o.client, o.errorHandler),
@@ -44,12 +51,6 @@ func (o OctopusCheckFactory) BuildAllChecks(config *config.OctolintConfig) ([]ch
 		organization.NewOctopusTenantsInsteadOfTagsCheck(o.client, o.errorHandler),
 		organization.NewOctopusProjectGroupsWithExclusiveEnvironmentsCheck(o.client, o.errorHandler),
 		organization.NewOctopusUnhealthyTargetCheck(o.client, o.errorHandler),
-		security.NewOctopusDeploymentQueuedByAdminCheck(o.client, o.errorHandler),
-		security.NewOctopusPerpetualApiKeysCheck(o.client, o.errorHandler),
-		security.NewOctopusDuplicatedGitCredentialsCheck(o.client, o.errorHandler),
-		security.NewOctopusInsecureK8sCheck(o.client, o.errorHandler),
-		security.NewOctopusInsecureFeedsCheck(o.client, o.errorHandler),
-		security.NewOctopusInsecureSubscriptionsCheck(o.client, o.errorHandler),
 		performance.NewOctopusDeploymentQueuedTimeCheck(o.client, o.url, o.space, o.errorHandler),
 		naming.NewOctopusProjectContainerImageRegex(o.client, config, o.errorHandler),
 		naming.NewOctopusInvalidVariableNameCheck(o.client, config, o.errorHandler),
