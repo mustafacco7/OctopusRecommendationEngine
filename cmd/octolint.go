@@ -207,8 +207,11 @@ func bindFlags(v *viper.Viper) (funErr error) {
 
 		if !defined && v.IsSet(allFlags.Name) {
 			configName := strings.ReplaceAll(allFlags.Name, "-", "")
-			err := flag.Set(allFlags.Name, v.GetString(configName))
-			funcError = errors.Join(funcError, err)
+
+			for _, value := range v.GetStringSlice(configName) {
+				err := flag.Set(allFlags.Name, value)
+				funcError = errors.Join(funcError, err)
+			}
 		}
 	})
 
