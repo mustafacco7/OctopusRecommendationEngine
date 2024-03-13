@@ -3,7 +3,7 @@ module github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine
 go 1.20
 
 require (
-	github.com/OctopusDeploy/go-octopusdeploy/v2 v2.36.3
+	github.com/OctopusDeploy/go-octopusdeploy/v2 v2.38.3
 	github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework v0.0.0-20240104054052-d6c6179795df
 	github.com/avast/retry-go/v4 v4.5.1
 	github.com/briandowns/spinner v1.23.0
