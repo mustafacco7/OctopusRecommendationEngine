@@ -46,7 +46,8 @@ func (o OctopusDuplicatedGitCredentialsCheck) Execute() (checks.OctopusCheckResu
 
 	o.client.Users.GetAll()
 
-	allProjects, err := newclient.Get[resources.Resources[CustomProject]](o.client.HttpSession(), o.client.HttpSession().BaseURL.String()+"/Projects?take=1000")
+	url := o.client.HttpSession().BaseURL.String() + "/api/" + o.client.GetSpaceID() + "/Projects?take=1000"
+	allProjects, err := newclient.Get[resources.Resources[CustomProject]](o.client.HttpSession(), url)
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Security, err)
