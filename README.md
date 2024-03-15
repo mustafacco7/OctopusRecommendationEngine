@@ -130,4 +130,4 @@ This is an example of the tool output:
 
 ## Checks
 
-Refer to the [wiki](https://github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/wiki) for a list of checks.
+Refer to the [wiki](https://github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/wiki) for a list of checks. 
