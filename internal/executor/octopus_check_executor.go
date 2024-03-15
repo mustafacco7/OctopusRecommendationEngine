@@ -28,7 +28,14 @@ func (o OctopusCheckExecutor) ExecuteChecks(checkCollection []checks.OctopusChec
 				result, err := c.Execute()
 
 				if err != nil {
-					return err
+					checkResults = append(
+						checkResults,
+						checks.NewOctopusCheckResultImpl(
+							"The check failed to run: "+err.Error(),
+							c.Id(),
+							"",
+							checks.Error,
+							checks.GeneralError))
 				}
 
 				if result != nil {

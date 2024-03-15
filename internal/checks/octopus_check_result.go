@@ -14,6 +14,7 @@ const (
 	Security            = "Security"
 	Performance         = "Performance"
 	Optimization        = "Optimization"
+	GeneralError        = "GeneralError"
 )
 
 // OctopusCheckResult describes the result of an OctopusCheck
