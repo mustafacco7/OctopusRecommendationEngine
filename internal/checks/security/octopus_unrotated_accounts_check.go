@@ -41,6 +41,12 @@ func (o OctopusUnrotatedAccountsCheck) Execute() (checks.OctopusCheckResult, err
 		zap.L().Info("Starting check " + o.Id())
 	}
 
+	defer func() {
+		if o.config.Verbose {
+			zap.L().Info("Ended check " + o.Id())
+		}
+	}()
+
 	now := time.Now()
 	start := now.Add(maxTimeSinceAccountEdit * -1)
 	end := now

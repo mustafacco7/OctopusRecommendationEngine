@@ -42,6 +42,12 @@ func (o OctopusProjectContainerImageRegex) Execute() (checks.OctopusCheckResult,
 		zap.L().Info("Starting check " + o.Id())
 	}
 
+	defer func() {
+		if o.config.Verbose {
+			zap.L().Info("Ended check " + o.Id())
+		}
+	}()
+
 	if strings.TrimSpace(o.config.ContainerImageRegex) == "" {
 		return nil, nil
 	}

@@ -44,6 +44,12 @@ func (o OctopusProjectWorkerPoolRegex) Execute() (checks.OctopusCheckResult, err
 		zap.L().Info("Starting check " + o.Id())
 	}
 
+	defer func() {
+		if o.config.Verbose {
+			zap.L().Info("Ended check " + o.Id())
+		}
+	}()
+
 	if strings.TrimSpace(o.config.ProjectStepWorkerPoolRegex) == "" {
 		return nil, nil
 	}

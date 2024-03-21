@@ -37,6 +37,12 @@ func (o OctopusUnhealthyTargetCheck) Execute() (checks.OctopusCheckResult, error
 		zap.L().Info("Starting check " + o.Id())
 	}
 
+	defer func() {
+		if o.config.Verbose {
+			zap.L().Info("Ended check " + o.Id())
+		}
+	}()
+
 	allMachines, err := o.client.Machines.GetAll()
 
 	if err != nil {

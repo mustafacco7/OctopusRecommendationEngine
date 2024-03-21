@@ -37,6 +37,12 @@ func (o OctopusDefaultProjectGroupCountCheck) Execute() (checks.OctopusCheckResu
 		zap.L().Info("Starting check " + o.Id())
 	}
 
+	defer func() {
+		if o.config.Verbose {
+			zap.L().Info("Ended check " + o.Id())
+		}
+	}()
+
 	resource, err := o.client.ProjectGroups.GetByName("Default Project Group")
 
 	if err != nil {

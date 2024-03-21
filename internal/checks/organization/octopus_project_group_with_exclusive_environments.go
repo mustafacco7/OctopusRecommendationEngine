@@ -35,6 +35,12 @@ func (o OctopusProjectGroupsWithExclusiveEnvironmentsCheck) Execute() (checks.Oc
 		zap.L().Info("Starting check " + o.Id())
 	}
 
+	defer func() {
+		if o.config.Verbose {
+			zap.L().Info("Ended check " + o.Id())
+		}
+	}()
+
 	allProjectGroups, err := o.client.ProjectGroups.GetAll()
 
 	if err != nil {

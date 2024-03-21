@@ -47,6 +47,12 @@ func (o OctopusPerpetualApiKeysCheck) Execute() (checks.OctopusCheckResult, erro
 		zap.L().Info("Starting check " + o.Id())
 	}
 
+	defer func() {
+		if o.config.Verbose {
+			zap.L().Info("Ended check " + o.Id())
+		}
+	}()
+
 	users, err := o.client.Users.GetAll()
 
 	if err != nil {

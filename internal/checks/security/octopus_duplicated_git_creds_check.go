@@ -51,6 +51,12 @@ func (o OctopusDuplicatedGitCredentialsCheck) Execute() (checks.OctopusCheckResu
 		zap.L().Info("Starting check " + o.Id())
 	}
 
+	defer func() {
+		if o.config.Verbose {
+			zap.L().Info("Ended check " + o.Id())
+		}
+	}()
+
 	url := o.client.HttpSession().BaseURL.String() + "/api/" + o.client.GetSpaceID() + "/Projects?take=1000"
 	allProjects, err := newclient.Get[resources.Resources[CustomProject]](o.client.HttpSession(), url)
 

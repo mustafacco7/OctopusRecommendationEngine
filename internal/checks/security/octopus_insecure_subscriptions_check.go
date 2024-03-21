@@ -35,6 +35,12 @@ func (o OctopusInsecureSubscriptionsCheck) Execute() (checks.OctopusCheckResult,
 		zap.L().Info("Starting check " + o.Id())
 	}
 
+	defer func() {
+		if o.config.Verbose {
+			zap.L().Info("Ended check " + o.Id())
+		}
+	}()
+
 	collection := resources.Resources[*OctopusSubscription]{}
 	_, err := api.ApiGet(o.client.Subscriptions.GetClient(), &collection, o.client.Subscriptions.BasePath+"?skip=0&take=2147483647")
 

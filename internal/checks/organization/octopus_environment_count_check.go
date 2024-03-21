@@ -36,6 +36,12 @@ func (o OctopusEnvironmentCountCheck) Execute() (checks.OctopusCheckResult, erro
 		zap.L().Info("Starting check " + o.Id())
 	}
 
+	defer func() {
+		if o.config.Verbose {
+			zap.L().Info("Ended check " + o.Id())
+		}
+	}()
+
 	query := environments.EnvironmentsQuery{
 		PartialName: "",
 		Skip:        0,

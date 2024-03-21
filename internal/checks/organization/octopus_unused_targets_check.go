@@ -42,6 +42,12 @@ func (o OctopusUnusedTargetsCheck) Execute() (checks.OctopusCheckResult, error) 
 		zap.L().Info("Starting check " + o.Id())
 	}
 
+	defer func() {
+		if o.config.Verbose {
+			zap.L().Info("Ended check " + o.Id())
+		}
+	}()
+
 	targets, err := o.client.Machines.GetAll()
 
 	if err != nil {
