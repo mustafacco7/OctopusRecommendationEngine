@@ -9,6 +9,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/tasks"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
+	"go.uber.org/zap"
 	"regexp"
 	"strings"
 	"time"
@@ -20,10 +22,11 @@ const maxTimeSinceLastMachineDeployment = time.Hour * 24 * 30
 type OctopusUnusedTargetsCheck struct {
 	client       *client.Client
 	errorHandler checks.OctopusClientErrorHandler
+	config       *config.OctolintConfig
 }
 
-func NewOctopusUnusedTargetsCheck(client *client.Client, errorHandler checks.OctopusClientErrorHandler) OctopusUnusedTargetsCheck {
-	return OctopusUnusedTargetsCheck{client: client, errorHandler: errorHandler}
+func NewOctopusUnusedTargetsCheck(client *client.Client, config *config.OctolintConfig, errorHandler checks.OctopusClientErrorHandler) OctopusUnusedTargetsCheck {
+	return OctopusUnusedTargetsCheck{config: config, client: client, errorHandler: errorHandler}
 }
 
 func (o OctopusUnusedTargetsCheck) Id() string {
@@ -33,6 +36,10 @@ func (o OctopusUnusedTargetsCheck) Id() string {
 func (o OctopusUnusedTargetsCheck) Execute() (checks.OctopusCheckResult, error) {
 	if o.client == nil {
 		return nil, errors.New("octoclient is nil")
+	}
+
+	if o.config.Verbose {
+		zap.L().Info("Starting check " + o.Id())
 	}
 
 	targets, err := o.client.Machines.GetAll()

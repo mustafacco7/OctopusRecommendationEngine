@@ -5,6 +5,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/feeds"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
+	"go.uber.org/zap"
 	"strings"
 )
 
@@ -12,10 +14,11 @@ import (
 type OctopusInsecureFeedsCheck struct {
 	client       *client.Client
 	errorHandler checks.OctopusClientErrorHandler
+	config       *config.OctolintConfig
 }
 
-func NewOctopusInsecureFeedsCheck(client *client.Client, errorHandler checks.OctopusClientErrorHandler) OctopusInsecureFeedsCheck {
-	return OctopusInsecureFeedsCheck{client: client, errorHandler: errorHandler}
+func NewOctopusInsecureFeedsCheck(client *client.Client, config *config.OctolintConfig, errorHandler checks.OctopusClientErrorHandler) OctopusInsecureFeedsCheck {
+	return OctopusInsecureFeedsCheck{config: config, client: client, errorHandler: errorHandler}
 }
 
 func (o OctopusInsecureFeedsCheck) Id() string {
@@ -25,6 +28,10 @@ func (o OctopusInsecureFeedsCheck) Id() string {
 func (o OctopusInsecureFeedsCheck) Execute() (checks.OctopusCheckResult, error) {
 	if o.client == nil {
 		return nil, errors.New("octoclient is nil")
+	}
+
+	if o.config.Verbose {
+		zap.L().Info("Starting check " + o.Id())
 	}
 
 	targets, err := o.client.Feeds.GetAll()

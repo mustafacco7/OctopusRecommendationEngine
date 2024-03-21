@@ -28,6 +28,7 @@ func (o OctopusCheckExecutor) ExecuteChecks(checkCollection []checks.OctopusChec
 	g.SetLimit(10)
 
 	for _, c := range checkCollection {
+		c := c
 		g.Go(func() error {
 			err := retry.Do(
 				func() error {

@@ -5,6 +5,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/events"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
+	"go.uber.org/zap"
 	"strings"
 	"time"
 )
@@ -15,10 +17,11 @@ const maxHealthCheckTime = time.Hour * 24 * 30
 type OctopusUnhealthyTargetCheck struct {
 	client       *client.Client
 	errorHandler checks.OctopusClientErrorHandler
+	config       *config.OctolintConfig
 }
 
-func NewOctopusUnhealthyTargetCheck(client *client.Client, errorHandler checks.OctopusClientErrorHandler) OctopusUnhealthyTargetCheck {
-	return OctopusUnhealthyTargetCheck{client: client, errorHandler: errorHandler}
+func NewOctopusUnhealthyTargetCheck(client *client.Client, config *config.OctolintConfig, errorHandler checks.OctopusClientErrorHandler) OctopusUnhealthyTargetCheck {
+	return OctopusUnhealthyTargetCheck{config: config, client: client, errorHandler: errorHandler}
 }
 
 func (o OctopusUnhealthyTargetCheck) Id() string {
@@ -28,6 +31,10 @@ func (o OctopusUnhealthyTargetCheck) Id() string {
 func (o OctopusUnhealthyTargetCheck) Execute() (checks.OctopusCheckResult, error) {
 	if o.client == nil {
 		return nil, errors.New("octoclient is nil")
+	}
+
+	if o.config.Verbose {
+		zap.L().Info("Starting check " + o.Id())
 	}
 
 	allMachines, err := o.client.Machines.GetAll()

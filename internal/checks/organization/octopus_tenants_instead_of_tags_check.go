@@ -6,6 +6,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/tenants"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
+	"go.uber.org/zap"
 	"golang.org/x/exp/slices"
 	"strings"
 )
@@ -14,10 +16,11 @@ import (
 type OctopusTenantsInsteadOfTagsCheck struct {
 	client       *client.Client
 	errorHandler checks.OctopusClientErrorHandler
+	config       *config.OctolintConfig
 }
 
-func NewOctopusTenantsInsteadOfTagsCheck(client *client.Client, errorHandler checks.OctopusClientErrorHandler) OctopusTenantsInsteadOfTagsCheck {
-	return OctopusTenantsInsteadOfTagsCheck{client: client, errorHandler: errorHandler}
+func NewOctopusTenantsInsteadOfTagsCheck(client *client.Client, config *config.OctolintConfig, errorHandler checks.OctopusClientErrorHandler) OctopusTenantsInsteadOfTagsCheck {
+	return OctopusTenantsInsteadOfTagsCheck{config: config, client: client, errorHandler: errorHandler}
 }
 
 func (o OctopusTenantsInsteadOfTagsCheck) Id() string {
@@ -27,6 +30,10 @@ func (o OctopusTenantsInsteadOfTagsCheck) Id() string {
 func (o OctopusTenantsInsteadOfTagsCheck) Execute() (checks.OctopusCheckResult, error) {
 	if o.client == nil {
 		return nil, errors.New("octoclient is nil")
+	}
+
+	if o.config.Verbose {
+		zap.L().Info("Starting check " + o.Id())
 	}
 
 	allTenants, err := o.client.Tenants.GetAll()

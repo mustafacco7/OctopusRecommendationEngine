@@ -18,6 +18,7 @@ import (
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/octoclient"
 	"github.com/briandowns/spinner"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 	"net/http"
 	"net/url"
 	"os"
@@ -28,6 +29,8 @@ import (
 var Version = "development"
 
 func main() {
+	zap.ReplaceGlobals(zap.Must(zap.NewProduction()))
+
 	config, err := parseArgs()
 
 	if err != nil {
@@ -36,9 +39,15 @@ func main() {
 
 	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
 
-	if config.Spinner {
+	if config.Spinner && !config.Verbose {
 		s.Start()
 	}
+
+	defer func() {
+		if config.Spinner && !config.Verbose {
+			s.Stop()
+		}
+	}()
 
 	if config.Version {
 		fmt.Println("Version: " + Version)
@@ -100,10 +109,6 @@ func main() {
 		errorExit("Failed to generate the report")
 	}
 
-	if config.Spinner {
-		s.Stop()
-	}
-
 	fmt.Println(report)
 }
 
@@ -121,6 +126,7 @@ func parseArgs() (*config.OctolintConfig, error) {
 	flag.StringVar(&config.SkipTests, "skipTests", "", "A comma separated list of tests to skip")
 	flag.StringVar(&config.ConfigFile, "configFile", "octolint", "The name of the configuration file to use. Do not include the extension. Defaults to octolint")
 	flag.StringVar(&config.ConfigPath, "configPath", ".", "The path of the configuration file to use. Defaults to the current directory")
+	flag.BoolVar(&config.Verbose, "verbose", false, "Print verbose logs")
 	flag.BoolVar(&config.VerboseErrors, "verboseErrors", false, "Print error details as verbose logs in Octopus")
 	flag.BoolVar(&config.Version, "version", false, "Print the version")
 	flag.BoolVar(&config.Spinner, "spinner", true, "Display the spinner")

@@ -6,6 +6,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
+	"go.uber.org/zap"
 	"strings"
 )
 
@@ -29,10 +31,11 @@ type CustomCredentials struct {
 type OctopusDuplicatedGitCredentialsCheck struct {
 	client       *client.Client
 	errorHandler checks.OctopusClientErrorHandler
+	config       *config.OctolintConfig
 }
 
-func NewOctopusDuplicatedGitCredentialsCheck(client *client.Client, errorHandler checks.OctopusClientErrorHandler) OctopusDuplicatedGitCredentialsCheck {
-	return OctopusDuplicatedGitCredentialsCheck{client: client, errorHandler: errorHandler}
+func NewOctopusDuplicatedGitCredentialsCheck(client *client.Client, config *config.OctolintConfig, errorHandler checks.OctopusClientErrorHandler) OctopusDuplicatedGitCredentialsCheck {
+	return OctopusDuplicatedGitCredentialsCheck{config: config, client: client, errorHandler: errorHandler}
 }
 
 func (o OctopusDuplicatedGitCredentialsCheck) Id() string {
@@ -44,7 +47,9 @@ func (o OctopusDuplicatedGitCredentialsCheck) Execute() (checks.OctopusCheckResu
 		return nil, errors.New("octoclient is nil")
 	}
 
-	o.client.Users.GetAll()
+	if o.config.Verbose {
+		zap.L().Info("Starting check " + o.Id())
+	}
 
 	url := o.client.HttpSession().BaseURL.String() + "/api/" + o.client.GetSpaceID() + "/Projects?take=1000"
 	allProjects, err := newclient.Get[resources.Resources[CustomProject]](o.client.HttpSession(), url)

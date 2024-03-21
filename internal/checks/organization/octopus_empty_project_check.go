@@ -5,6 +5,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/runbooks"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
+	"go.uber.org/zap"
 	"strings"
 )
 
@@ -12,10 +14,11 @@ import (
 type OctopusEmptyProjectCheck struct {
 	client       *client.Client
 	errorHandler checks.OctopusClientErrorHandler
+	config       *config.OctolintConfig
 }
 
-func NewOctopusEmptyProjectCheck(client *client.Client, errorHandler checks.OctopusClientErrorHandler) OctopusEmptyProjectCheck {
-	return OctopusEmptyProjectCheck{client: client, errorHandler: errorHandler}
+func NewOctopusEmptyProjectCheck(client *client.Client, config *config.OctolintConfig, errorHandler checks.OctopusClientErrorHandler) OctopusEmptyProjectCheck {
+	return OctopusEmptyProjectCheck{config: config, client: client, errorHandler: errorHandler}
 }
 
 func (o OctopusEmptyProjectCheck) Id() string {
@@ -25,6 +28,10 @@ func (o OctopusEmptyProjectCheck) Id() string {
 func (o OctopusEmptyProjectCheck) Execute() (checks.OctopusCheckResult, error) {
 	if o.client == nil {
 		return nil, errors.New("octoclient is nil")
+	}
+
+	if o.config.Verbose {
+		zap.L().Info("Starting check " + o.Id())
 	}
 
 	projects, err := o.client.Projects.GetAll()

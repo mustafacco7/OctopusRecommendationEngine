@@ -6,6 +6,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
+	"go.uber.org/zap"
 	"regexp"
 	"strings"
 	"time"
@@ -25,10 +27,11 @@ type APIKey struct {
 type OctopusPerpetualApiKeysCheck struct {
 	client       *client.Client
 	errorHandler checks.OctopusClientErrorHandler
+	config       *config.OctolintConfig
 }
 
-func NewOctopusPerpetualApiKeysCheck(client *client.Client, errorHandler checks.OctopusClientErrorHandler) OctopusPerpetualApiKeysCheck {
-	return OctopusPerpetualApiKeysCheck{client: client, errorHandler: errorHandler}
+func NewOctopusPerpetualApiKeysCheck(client *client.Client, config *config.OctolintConfig, errorHandler checks.OctopusClientErrorHandler) OctopusPerpetualApiKeysCheck {
+	return OctopusPerpetualApiKeysCheck{config: config, client: client, errorHandler: errorHandler}
 }
 
 func (o OctopusPerpetualApiKeysCheck) Id() string {
@@ -38,6 +41,10 @@ func (o OctopusPerpetualApiKeysCheck) Id() string {
 func (o OctopusPerpetualApiKeysCheck) Execute() (checks.OctopusCheckResult, error) {
 	if o.client == nil {
 		return nil, errors.New("octoclient is nil")
+	}
+
+	if o.config.Verbose {
+		zap.L().Info("Starting check " + o.Id())
 	}
 
 	users, err := o.client.Users.GetAll()

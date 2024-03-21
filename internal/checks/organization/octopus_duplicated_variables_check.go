@@ -6,6 +6,8 @@ import (
 	projects2 "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
+	"go.uber.org/zap"
 	"golang.org/x/exp/slices"
 	"strconv"
 	"strings"
@@ -23,10 +25,11 @@ type projectVar struct {
 type OctopusDuplicatedVariablesCheck struct {
 	client       *client.Client
 	errorHandler checks.OctopusClientErrorHandler
+	config       *config.OctolintConfig
 }
 
-func NewOctopusDuplicatedVariablesCheck(client *client.Client, errorHandler checks.OctopusClientErrorHandler) OctopusDuplicatedVariablesCheck {
-	return OctopusDuplicatedVariablesCheck{client: client, errorHandler: errorHandler}
+func NewOctopusDuplicatedVariablesCheck(client *client.Client, config *config.OctolintConfig, errorHandler checks.OctopusClientErrorHandler) OctopusDuplicatedVariablesCheck {
+	return OctopusDuplicatedVariablesCheck{config: config, client: client, errorHandler: errorHandler}
 }
 
 func (o OctopusDuplicatedVariablesCheck) Id() string {
@@ -36,6 +39,10 @@ func (o OctopusDuplicatedVariablesCheck) Id() string {
 func (o OctopusDuplicatedVariablesCheck) Execute() (checks.OctopusCheckResult, error) {
 	if o.client == nil {
 		return nil, errors.New("octoclient is nil")
+	}
+
+	if o.config.Verbose {
+		zap.L().Info("Starting check " + o.Id())
 	}
 
 	projects, err := o.client.Projects.GetAll()

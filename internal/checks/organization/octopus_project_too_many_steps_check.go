@@ -5,6 +5,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
+	"go.uber.org/zap"
 	"strings"
 )
 
@@ -14,10 +16,11 @@ const maxStepCount = 20
 type OctopusProjectTooManyStepsCheck struct {
 	client       *client.Client
 	errorHandler checks.OctopusClientErrorHandler
+	config       *config.OctolintConfig
 }
 
-func NewOctopusProjectTooManyStepsCheck(client *client.Client, errorHandler checks.OctopusClientErrorHandler) OctopusProjectTooManyStepsCheck {
-	return OctopusProjectTooManyStepsCheck{client: client, errorHandler: errorHandler}
+func NewOctopusProjectTooManyStepsCheck(client *client.Client, config *config.OctolintConfig, errorHandler checks.OctopusClientErrorHandler) OctopusProjectTooManyStepsCheck {
+	return OctopusProjectTooManyStepsCheck{config: config, client: client, errorHandler: errorHandler}
 }
 
 func (o OctopusProjectTooManyStepsCheck) Id() string {
@@ -27,6 +30,10 @@ func (o OctopusProjectTooManyStepsCheck) Id() string {
 func (o OctopusProjectTooManyStepsCheck) Execute() (checks.OctopusCheckResult, error) {
 	if o.client == nil {
 		return nil, errors.New("octoclient is nil")
+	}
+
+	if o.config.Verbose {
+		zap.L().Info("Starting check " + o.Id())
 	}
 
 	projects, err := o.client.Projects.GetAll()

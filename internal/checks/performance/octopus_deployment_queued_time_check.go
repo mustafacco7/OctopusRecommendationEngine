@@ -6,7 +6,9 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/events"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"github.com/samber/lo"
+	"go.uber.org/zap"
 	"math"
 	"strings"
 	"time"
@@ -36,10 +38,11 @@ type OctopusDeploymentQueuedTimeCheck struct {
 	errorHandler checks.OctopusClientErrorHandler
 	url          string
 	space        string
+	config       *config.OctolintConfig
 }
 
-func NewOctopusDeploymentQueuedTimeCheck(client *client.Client, url string, space string, errorHandler checks.OctopusClientErrorHandler) OctopusDeploymentQueuedTimeCheck {
-	return OctopusDeploymentQueuedTimeCheck{client: client, url: url, space: space, errorHandler: errorHandler}
+func NewOctopusDeploymentQueuedTimeCheck(client *client.Client, config *config.OctolintConfig, url string, space string, errorHandler checks.OctopusClientErrorHandler) OctopusDeploymentQueuedTimeCheck {
+	return OctopusDeploymentQueuedTimeCheck{config: config, client: client, url: url, space: space, errorHandler: errorHandler}
 }
 
 func (o OctopusDeploymentQueuedTimeCheck) Id() string {
@@ -49,6 +52,10 @@ func (o OctopusDeploymentQueuedTimeCheck) Id() string {
 func (o OctopusDeploymentQueuedTimeCheck) Execute() (checks.OctopusCheckResult, error) {
 	if o.client == nil {
 		return nil, errors.New("octoclient is nil")
+	}
+
+	if o.config.Verbose {
+		zap.L().Info("Starting check " + o.Id())
 	}
 
 	resource, err := o.client.Events.Get(events.EventsQuery{

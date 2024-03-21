@@ -10,6 +10,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/runbooks"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
+	"go.uber.org/zap"
 	"regexp"
 	"strings"
 )
@@ -20,10 +22,11 @@ var linkOptions = regexp.MustCompile(`\{.*?}`)
 type OctopusUnusedVariablesCheck struct {
 	client       *client.Client
 	errorHandler checks.OctopusClientErrorHandler
+	config       *config.OctolintConfig
 }
 
-func NewOctopusUnusedVariablesCheck(client *client.Client, errorHandler checks.OctopusClientErrorHandler) OctopusUnusedVariablesCheck {
-	return OctopusUnusedVariablesCheck{client: client, errorHandler: errorHandler}
+func NewOctopusUnusedVariablesCheck(client *client.Client, config *config.OctolintConfig, errorHandler checks.OctopusClientErrorHandler) OctopusUnusedVariablesCheck {
+	return OctopusUnusedVariablesCheck{config: config, client: client, errorHandler: errorHandler}
 }
 
 func (o OctopusUnusedVariablesCheck) Id() string {
@@ -33,6 +36,10 @@ func (o OctopusUnusedVariablesCheck) Id() string {
 func (o OctopusUnusedVariablesCheck) Execute() (checks.OctopusCheckResult, error) {
 	if o.client == nil {
 		return nil, errors.New("octoclient is nil")
+	}
+
+	if o.config.Verbose {
+		zap.L().Info("Starting check " + o.Id())
 	}
 
 	projects, err := o.client.Projects.GetAll()

@@ -5,16 +5,19 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/lifecycles"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
+	"go.uber.org/zap"
 	"strings"
 )
 
 type OctopusLifecycleRetentionPolicyCheck struct {
 	client       *client.Client
 	errorHandler checks.OctopusClientErrorHandler
+	config       *config.OctolintConfig
 }
 
-func NewOctopusLifecycleRetentionPolicyCheck(client *client.Client, errorHandler checks.OctopusClientErrorHandler) OctopusLifecycleRetentionPolicyCheck {
-	return OctopusLifecycleRetentionPolicyCheck{client: client, errorHandler: errorHandler}
+func NewOctopusLifecycleRetentionPolicyCheck(client *client.Client, config *config.OctolintConfig, errorHandler checks.OctopusClientErrorHandler) OctopusLifecycleRetentionPolicyCheck {
+	return OctopusLifecycleRetentionPolicyCheck{config: config, client: client, errorHandler: errorHandler}
 }
 
 func (o OctopusLifecycleRetentionPolicyCheck) Id() string {
@@ -24,6 +27,10 @@ func (o OctopusLifecycleRetentionPolicyCheck) Id() string {
 func (o OctopusLifecycleRetentionPolicyCheck) Execute() (checks.OctopusCheckResult, error) {
 	if o.client == nil {
 		return nil, errors.New("octoclient is nil")
+	}
+
+	if o.config.Verbose {
+		zap.L().Info("Starting check " + o.Id())
 	}
 
 	lifecycles, err := o.client.Lifecycles.GetAll()

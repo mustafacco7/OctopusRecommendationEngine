@@ -5,6 +5,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/lifecycles"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
+	"go.uber.org/zap"
 	"golang.org/x/exp/slices"
 	"strings"
 )
@@ -13,10 +15,11 @@ import (
 type OctopusProjectGroupsWithExclusiveEnvironmentsCheck struct {
 	client       *client.Client
 	errorHandler checks.OctopusClientErrorHandler
+	config       *config.OctolintConfig
 }
 
-func NewOctopusProjectGroupsWithExclusiveEnvironmentsCheck(client *client.Client, errorHandler checks.OctopusClientErrorHandler) OctopusProjectGroupsWithExclusiveEnvironmentsCheck {
-	return OctopusProjectGroupsWithExclusiveEnvironmentsCheck{client: client, errorHandler: errorHandler}
+func NewOctopusProjectGroupsWithExclusiveEnvironmentsCheck(client *client.Client, config *config.OctolintConfig, errorHandler checks.OctopusClientErrorHandler) OctopusProjectGroupsWithExclusiveEnvironmentsCheck {
+	return OctopusProjectGroupsWithExclusiveEnvironmentsCheck{config: config, client: client, errorHandler: errorHandler}
 }
 
 func (o OctopusProjectGroupsWithExclusiveEnvironmentsCheck) Id() string {
@@ -26,6 +29,10 @@ func (o OctopusProjectGroupsWithExclusiveEnvironmentsCheck) Id() string {
 func (o OctopusProjectGroupsWithExclusiveEnvironmentsCheck) Execute() (checks.OctopusCheckResult, error) {
 	if o.client == nil {
 		return nil, errors.New("octoclient is nil")
+	}
+
+	if o.config.Verbose {
+		zap.L().Info("Starting check " + o.Id())
 	}
 
 	allProjectGroups, err := o.client.ProjectGroups.GetAll()

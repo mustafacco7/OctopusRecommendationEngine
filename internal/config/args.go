@@ -10,6 +10,7 @@ type OctolintConfig struct {
 	Spinner       bool
 	ConfigFile    string
 	ConfigPath    string
+	Verbose       bool
 
 	// These values are used to configure individual checks
 	MaxEnvironments             int

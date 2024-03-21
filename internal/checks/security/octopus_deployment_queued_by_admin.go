@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/teams"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/users"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
+	"go.uber.org/zap"
 	"golang.org/x/exp/slices"
 	"strings"
 	"time"
@@ -17,10 +19,11 @@ import (
 type OctopusDeploymentQueuedByAdminCheck struct {
 	client       *client.Client
 	errorHandler checks.OctopusClientErrorHandler
+	config       *config.OctolintConfig
 }
 
-func NewOctopusDeploymentQueuedByAdminCheck(client *client.Client, errorHandler checks.OctopusClientErrorHandler) OctopusDeploymentQueuedByAdminCheck {
-	return OctopusDeploymentQueuedByAdminCheck{client: client, errorHandler: errorHandler}
+func NewOctopusDeploymentQueuedByAdminCheck(client *client.Client, config *config.OctolintConfig, errorHandler checks.OctopusClientErrorHandler) OctopusDeploymentQueuedByAdminCheck {
+	return OctopusDeploymentQueuedByAdminCheck{config: config, client: client, errorHandler: errorHandler}
 }
 
 func (o OctopusDeploymentQueuedByAdminCheck) Id() string {
@@ -30,6 +33,10 @@ func (o OctopusDeploymentQueuedByAdminCheck) Id() string {
 func (o OctopusDeploymentQueuedByAdminCheck) Execute() (checks.OctopusCheckResult, error) {
 	if o.client == nil {
 		return nil, errors.New("octoclient is nil")
+	}
+
+	if o.config.Verbose {
+		zap.L().Info("Starting check " + o.Id())
 	}
 
 	projects, err := o.client.Projects.GetAll()

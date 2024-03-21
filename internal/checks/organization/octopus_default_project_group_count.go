@@ -6,6 +6,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
+	"go.uber.org/zap"
 )
 
 const maxProjectsInDefaultGroup = 10
@@ -15,10 +17,11 @@ const maxProjectsInDefaultGroup = 10
 type OctopusDefaultProjectGroupCountCheck struct {
 	client       *client.Client
 	errorHandler checks.OctopusClientErrorHandler
+	config       *config.OctolintConfig
 }
 
-func NewOctopusDefaultProjectGroupCountCheck(client *client.Client, errorHandler checks.OctopusClientErrorHandler) OctopusDefaultProjectGroupCountCheck {
-	return OctopusDefaultProjectGroupCountCheck{client: client, errorHandler: errorHandler}
+func NewOctopusDefaultProjectGroupCountCheck(client *client.Client, config *config.OctolintConfig, errorHandler checks.OctopusClientErrorHandler) OctopusDefaultProjectGroupCountCheck {
+	return OctopusDefaultProjectGroupCountCheck{config: config, client: client, errorHandler: errorHandler}
 }
 
 func (o OctopusDefaultProjectGroupCountCheck) Id() string {
@@ -28,6 +31,10 @@ func (o OctopusDefaultProjectGroupCountCheck) Id() string {
 func (o OctopusDefaultProjectGroupCountCheck) Execute() (checks.OctopusCheckResult, error) {
 	if o.client == nil {
 		return nil, errors.New("octoclient is nil")
+	}
+
+	if o.config.Verbose {
+		zap.L().Info("Starting check " + o.Id())
 	}
 
 	resource, err := o.client.ProjectGroups.GetByName("Default Project Group")
