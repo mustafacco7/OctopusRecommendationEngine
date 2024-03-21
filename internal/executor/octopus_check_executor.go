@@ -1,8 +1,10 @@
 package executor
 
 import (
+	"context"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
 	"github.com/avast/retry-go/v4"
+	"golang.org/x/sync/errgroup"
 )
 
 // OctopusCheckExecutor is responsible for running each lint check and returning the results. It deals with things
@@ -22,35 +24,46 @@ func (o OctopusCheckExecutor) ExecuteChecks(checkCollection []checks.OctopusChec
 
 	checkResults := []checks.OctopusCheckResult{}
 
+	g, _ := errgroup.WithContext(context.Background())
+	g.SetLimit(10)
+
 	for _, c := range checkCollection {
-		err := retry.Do(
-			func() error {
-				result, err := c.Execute()
+		g.Go(func() error {
+			err := retry.Do(
+				func() error {
+					result, err := c.Execute()
 
-				if err != nil {
-					checkResults = append(
-						checkResults,
-						checks.NewOctopusCheckResultImpl(
-							"The check failed to run: "+err.Error(),
-							c.Id(),
-							"",
-							checks.Error,
-							checks.GeneralError))
-				}
+					if err != nil {
+						checkResults = append(
+							checkResults,
+							checks.NewOctopusCheckResultImpl(
+								"The check failed to run: "+err.Error(),
+								c.Id(),
+								"",
+								checks.Error,
+								checks.GeneralError))
+					}
 
-				if result != nil {
-					checkResults = append(checkResults, result)
-				}
+					if result != nil {
+						checkResults = append(checkResults, result)
+					}
 
-				return nil
-			}, retry.Attempts(3))
+					return nil
+				}, retry.Attempts(3))
 
-		if err != nil {
-			err := handleError(c, err)
 			if err != nil {
-				return nil, err
+				err := handleError(c, err)
+				if err != nil {
+					return err
+				}
 			}
-		}
+
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		return nil, err
 	}
 
 	return checkResults, nil
