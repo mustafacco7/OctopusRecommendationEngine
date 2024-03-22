@@ -2,6 +2,7 @@ package performance
 
 import (
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/octoclient"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/test"
 	"net/http"
@@ -1747,7 +1748,7 @@ func TestLongTaskQueue(t *testing.T) {
 
 	// Act
 	newSpaceClient, err := octoclient.CreateClient(server.URL, "Spaces-1", test.ApiKey)
-	check := NewOctopusDeploymentQueuedTimeCheck(newSpaceClient, "http://test.app", "Spaces-1", checks.OctopusClientPermissiveErrorHandler{})
+	check := NewOctopusDeploymentQueuedTimeCheck(newSpaceClient, &config.OctolintConfig{}, "http://test.app", "Spaces-1", checks.OctopusClientPermissiveErrorHandler{})
 
 	result, err := check.Execute()
 

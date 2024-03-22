@@ -5,6 +5,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/users"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/octoclient"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/test"
 	"path/filepath"
@@ -27,7 +28,7 @@ func TestNormalProjectCount(t *testing.T) {
 			return err
 		}
 
-		check := NewOctopusDefaultProjectGroupCountCheck(newSpaceClient, checks.OctopusClientPermissiveErrorHandler{})
+		check := NewOctopusDefaultProjectGroupCountCheck(newSpaceClient, &config.OctolintConfig{}, checks.OctopusClientPermissiveErrorHandler{})
 
 		result, err := check.Execute()
 
@@ -60,7 +61,7 @@ func TestExcessiveProjectCount(t *testing.T) {
 			return err
 		}
 
-		check := NewOctopusDefaultProjectGroupCountCheck(newSpaceClient, checks.OctopusClientPermissiveErrorHandler{})
+		check := NewOctopusDefaultProjectGroupCountCheck(newSpaceClient, &config.OctolintConfig{}, checks.OctopusClientPermissiveErrorHandler{})
 
 		result, err := check.Execute()
 
@@ -112,7 +113,7 @@ func TestExcessiveProjectCountWithPermissionsError(t *testing.T) {
 			return err
 		}
 
-		check := NewOctopusDefaultProjectGroupCountCheck(limitedClient, checks.OctopusClientPermissiveErrorHandler{})
+		check := NewOctopusDefaultProjectGroupCountCheck(limitedClient, &config.OctolintConfig{}, checks.OctopusClientPermissiveErrorHandler{})
 
 		result, err := check.Execute()
 

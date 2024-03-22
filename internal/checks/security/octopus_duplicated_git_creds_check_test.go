@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/octoclient"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/test"
 	"os"
@@ -32,7 +33,7 @@ func TestDuplicatedGitCreds(t *testing.T) {
 			return err
 		}
 
-		check := NewOctopusDuplicatedGitCredentialsCheck(newSpaceClient, checks.OctopusClientPermissiveErrorHandler{})
+		check := NewOctopusDuplicatedGitCredentialsCheck(newSpaceClient, &config.OctolintConfig{}, checks.OctopusClientPermissiveErrorHandler{})
 
 		result, err := check.Execute()
 

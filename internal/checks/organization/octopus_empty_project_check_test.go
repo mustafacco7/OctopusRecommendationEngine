@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/octoclient"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/test"
 	"path/filepath"
@@ -26,7 +27,7 @@ func TestPopulatedDeploymentProcess(t *testing.T) {
 			return err
 		}
 
-		check := NewOctopusEmptyProjectCheck(newSpaceClient, checks.OctopusClientPermissiveErrorHandler{})
+		check := NewOctopusEmptyProjectCheck(newSpaceClient, &config.OctolintConfig{}, checks.OctopusClientPermissiveErrorHandler{})
 
 		result, err := check.Execute()
 
@@ -59,7 +60,7 @@ func TestEmptyDeploymentProcess(t *testing.T) {
 			return err
 		}
 
-		check := NewOctopusEmptyProjectCheck(newSpaceClient, checks.OctopusClientPermissiveErrorHandler{})
+		check := NewOctopusEmptyProjectCheck(newSpaceClient, &config.OctolintConfig{}, checks.OctopusClientPermissiveErrorHandler{})
 
 		result, err := check.Execute()
 

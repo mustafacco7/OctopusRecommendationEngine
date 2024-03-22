@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/octoclient"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/test"
 	"path/filepath"
@@ -42,7 +43,7 @@ func TestUnhealthyTargets(t *testing.T) {
 			time.Sleep(time.Second * 10)
 		}
 
-		check := NewOctopusUnhealthyTargetCheck(newSpaceClient, checks.OctopusClientPermissiveErrorHandler{})
+		check := NewOctopusUnhealthyTargetCheck(newSpaceClient, &config.OctolintConfig{}, checks.OctopusClientPermissiveErrorHandler{})
 
 		result, err := check.Execute()
 

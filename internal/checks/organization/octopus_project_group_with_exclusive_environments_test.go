@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/octoclient"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/test"
 	"path/filepath"
@@ -26,7 +27,7 @@ func TestProjectGroupsWithMutuallyExcluiveProjectLifecycles(t *testing.T) {
 			return err
 		}
 
-		check := NewOctopusProjectGroupsWithExclusiveEnvironmentsCheck(newSpaceClient, checks.OctopusClientPermissiveErrorHandler{})
+		check := NewOctopusProjectGroupsWithExclusiveEnvironmentsCheck(newSpaceClient, &config.OctolintConfig{}, checks.OctopusClientPermissiveErrorHandler{})
 
 		result, err := check.Execute()
 

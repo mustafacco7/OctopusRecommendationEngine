@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/octoclient"
 	"github.com/OctopusSolutionsEngineering/OctopusTerraformTestFramework/test"
 	"path/filepath"
@@ -46,7 +47,7 @@ func TestLifecyclesMeetRecommendations(t *testing.T) {
 			return err
 		}
 
-		check := NewOctopusLifecycleRetentionPolicyCheck(newSpaceClient, checks.OctopusClientPermissiveErrorHandler{})
+		check := NewOctopusLifecycleRetentionPolicyCheck(newSpaceClient, &config.OctolintConfig{}, checks.OctopusClientPermissiveErrorHandler{})
 
 		result, err := check.Execute()
 
@@ -80,7 +81,7 @@ func TestLifecycleKeepsReleasesForever(t *testing.T) {
 			return err
 		}
 
-		check := NewOctopusLifecycleRetentionPolicyCheck(newSpaceClient, checks.OctopusClientPermissiveErrorHandler{})
+		check := NewOctopusLifecycleRetentionPolicyCheck(newSpaceClient, &config.OctolintConfig{}, checks.OctopusClientPermissiveErrorHandler{})
 
 		result, err := check.Execute()
 
@@ -118,7 +119,7 @@ func TestLifecycleKeepsFilesForever(t *testing.T) {
 			return err
 		}
 
-		check := NewOctopusLifecycleRetentionPolicyCheck(newSpaceClient, checks.OctopusClientPermissiveErrorHandler{})
+		check := NewOctopusLifecycleRetentionPolicyCheck(newSpaceClient, &config.OctolintConfig{}, checks.OctopusClientPermissiveErrorHandler{})
 
 		result, err := check.Execute()
 
@@ -156,7 +157,7 @@ func TestLifecyclePhaseKeepsReleasesForever(t *testing.T) {
 			return err
 		}
 
-		check := NewOctopusLifecycleRetentionPolicyCheck(newSpaceClient, checks.OctopusClientPermissiveErrorHandler{})
+		check := NewOctopusLifecycleRetentionPolicyCheck(newSpaceClient, &config.OctolintConfig{}, checks.OctopusClientPermissiveErrorHandler{})
 
 		result, err := check.Execute()
 
@@ -194,7 +195,7 @@ func TestLifecyclePhaseKeepsFilesForever(t *testing.T) {
 			return err
 		}
 
-		check := NewOctopusLifecycleRetentionPolicyCheck(newSpaceClient, checks.OctopusClientPermissiveErrorHandler{})
+		check := NewOctopusLifecycleRetentionPolicyCheck(newSpaceClient, &config.OctolintConfig{}, checks.OctopusClientPermissiveErrorHandler{})
 
 		result, err := check.Execute()
 
