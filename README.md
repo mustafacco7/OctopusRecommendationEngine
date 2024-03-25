@@ -144,7 +144,8 @@ you would normally pass to octolint:
 docker run --rm --entrypoint "/usr/bin/nslookup" octopussamples/octolint yourinstance.octopus.app
 ```
 
-This is an example of the output when the Docker container can not resolve the network address:
+This is an example of the output when the Docker container can not resolve the network address. This either indicates that
+the Docker networking is not allowing the hostname to be resolved, or that the hostname is invalid:
 
 ```shell
 $ docker run --rm --entrypoint "/usr/bin/nslookup" octopussamples/octolint this.address.does.not.exist
@@ -154,4 +155,18 @@ Address:	1.1.1.1:53
 ** server can't find this.address.does.not.exist: NXDOMAIN
 
 ** server can't find this.address.does.not.exist: NXDOMAIN
+```
+
+This is an example were the hostname can be successfully resolved:
+
+```shell
+docker run --rm --entrypoint "/usr/bin/nslookup" octopussamples/octolint mattc.octopus.app
+Server:		1.1.1.1
+Address:	1.1.1.1:53
+
+Non-authoritative answer:
+
+Non-authoritative answer:
+Name:	mattc.octopus.app
+Address: 20.53.101.130
 ```
