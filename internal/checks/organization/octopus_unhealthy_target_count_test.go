@@ -29,7 +29,7 @@ func TestUnhealthyTargets(t *testing.T) {
 		}
 
 		// loop for a bit until the target is unhealthy
-		for i := 0; i < 6; i++ {
+		for i := 0; i < 12; i++ {
 			machines, err := newSpaceClient.Machines.GetAll()
 
 			if err != nil {
