@@ -33,7 +33,7 @@ func TestInvalidReleaseTemplate(t *testing.T) {
 		check := NewOctopusProjectReleaseTemplateRegex(
 			newSpaceClient,
 			&config.OctolintConfig{
-				ProjectReleaseTemplateRegex: "#\\{Octopus\\.Version\\.LastMajor\\}\\.#\\{Octopus\\.Version\\.LastMinor\\}\\.#\\{Octopus\\.Version\\.LastPatch\\}",
+				ProjectReleaseTemplateRegex: "^#\\{Octopus\\.Version\\.LastMajor\\}\\.#\\{Octopus\\.Version\\.LastMinor\\}\\.#\\{Octopus\\.Version\\.LastPatch\\}$",
 			},
 			checks.OctopusClientPermissiveErrorHandler{})
 
