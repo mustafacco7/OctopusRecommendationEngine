@@ -30,7 +30,7 @@ func TestInvalidTargetRole(t *testing.T) {
 			return err
 		}
 
-		check := NewOctopusInvalidTargetName(
+		check := NewOctopusInvalidTargetRole(
 			newSpaceClient,
 			&config.OctolintConfig{
 				TargetRoleRegex: "thiswontmatch",
