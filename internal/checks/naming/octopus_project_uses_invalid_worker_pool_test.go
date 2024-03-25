@@ -33,7 +33,7 @@ func TestInvalidWorkerPool(t *testing.T) {
 		check := NewOctopusProjectWorkerPoolRegex(
 			newSpaceClient,
 			&config.OctolintConfig{
-				WorkerPoolNameRegex: "kubernetes",
+				ProjectStepWorkerPoolRegex: "kubernetes",
 			},
 			checks.OctopusClientPermissiveErrorHandler{})
 
