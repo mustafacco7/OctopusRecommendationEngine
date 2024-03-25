@@ -131,3 +131,15 @@ This is an example of the tool output:
 ## Checks
 
 Refer to the [wiki](https://github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/wiki) for a list of checks. 
+
+## Debugging network issues in docker
+
+If you get an error saying the client could not be created, and you are running octolint from a Docker container, check
+that the Octopus server can be resolved from the container with the following command. This command overrides the
+container entry point to run `nslookup` and passes the name of the server as the final argument. The example below
+attempts to resolve `yourinstance.octopus.app`, and you must change this to reflect the hostname of the `-url` argument
+you would normally pass to octolint:
+
+```shell
+docker run --rm --entrypoint "/usr/bin/nslookup" octopussamples/octolint yourinstance.octopus.app
+```
