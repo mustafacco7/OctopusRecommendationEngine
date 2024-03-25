@@ -160,7 +160,7 @@ Address:	1.1.1.1:53
 This is an example were the hostname can be successfully resolved:
 
 ```shell
-docker run --rm --entrypoint "/usr/bin/nslookup" octopussamples/octolint mattc.octopus.app
+$ docker run --rm --entrypoint "/usr/bin/nslookup" octopussamples/octolint mattc.octopus.app
 Server:		1.1.1.1
 Address:	1.1.1.1:53
 
