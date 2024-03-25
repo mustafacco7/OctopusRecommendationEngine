@@ -40,8 +40,8 @@ func TestLifecyclesInvalidName(t *testing.T) {
 		result, err := check.Execute()
 
 		// Assert
-		if result.Severity() != checks.Ok {
-			return errors.New("check should have passed")
+		if result == nil || result.Severity() != checks.Warning {
+			return errors.New("check should have produced a warning")
 		}
 
 		return nil
