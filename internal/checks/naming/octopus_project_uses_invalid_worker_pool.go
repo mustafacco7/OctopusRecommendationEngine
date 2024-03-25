@@ -87,7 +87,7 @@ func (o OctopusProjectWorkerPoolRegex) Execute() (checks.OctopusCheckResult, err
 		defaultWorkerPool = defaultWorkerPools[0].Name
 	}
 
-	actionsWithInvalidImages := []string{}
+	actionsWithInvalidWorkerPools := []string{}
 	for _, p := range projects {
 		deploymentProcess, err := o.stepsInDeploymentProcess(p.DeploymentProcessID)
 
@@ -112,7 +112,7 @@ func (o OctopusProjectWorkerPoolRegex) Execute() (checks.OctopusCheckResult, err
 				if a.WorkerPool == "" {
 					if defaultWorkerPool != "" && !regex.Match([]byte(defaultWorkerPool)) {
 
-						actionsWithInvalidImages = append(actionsWithInvalidImages, p.Name+"/"+a.Name+": "+defaultWorkerPool+" (default)")
+						actionsWithInvalidWorkerPools = append(actionsWithInvalidWorkerPools, p.Name+"/"+a.Name+": "+defaultWorkerPool+" (default)")
 					}
 				} else if !regex.Match([]byte(a.WorkerPool)) {
 					workerPool := lo.Filter(workerPools, func(item *workerpools.WorkerPoolListResult, index int) bool {
@@ -120,7 +120,7 @@ func (o OctopusProjectWorkerPoolRegex) Execute() (checks.OctopusCheckResult, err
 					})
 
 					if len(workerPool) == 1 && !regex.Match([]byte(workerPool[0].Name)) {
-						actionsWithInvalidImages = append(actionsWithInvalidImages, p.Name+"/"+a.Name+": "+workerPool[0].Name)
+						actionsWithInvalidWorkerPools = append(actionsWithInvalidWorkerPools, p.Name+"/"+a.Name+": "+workerPool[0].Name)
 					}
 				}
 			}
@@ -128,9 +128,9 @@ func (o OctopusProjectWorkerPoolRegex) Execute() (checks.OctopusCheckResult, err
 
 	}
 
-	if len(actionsWithInvalidImages) > 0 {
+	if len(actionsWithInvalidWorkerPools) > 0 {
 		return checks.NewOctopusCheckResultImpl(
-			"The following project actions use worker pools that do not match the regex "+o.config.ContainerImageRegex+":\n"+strings.Join(actionsWithInvalidImages, "\n"),
+			"The following project actions use worker pools that do not match the regex "+o.config.ContainerImageRegex+":\n"+strings.Join(actionsWithInvalidWorkerPools, "\n"),
 			o.Id(),
 			"",
 			checks.Warning,
