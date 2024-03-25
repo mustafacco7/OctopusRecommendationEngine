@@ -143,3 +143,15 @@ you would normally pass to octolint:
 ```shell
 docker run --rm --entrypoint "/usr/bin/nslookup" octopussamples/octolint yourinstance.octopus.app
 ```
+
+This is an example of the output when the Docker container can not resolve the network address:
+
+```shell
+$ docker run --rm --entrypoint "/usr/bin/nslookup" octopussamples/octolint this.address.does.not.exist
+Server:		1.1.1.1
+Address:	1.1.1.1:53
+
+** server can't find this.address.does.not.exist: NXDOMAIN
+
+** server can't find this.address.does.not.exist: NXDOMAIN
+```
