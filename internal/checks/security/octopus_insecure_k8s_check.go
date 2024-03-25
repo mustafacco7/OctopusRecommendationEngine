@@ -48,7 +48,7 @@ func (o OctopusInsecureK8sCheck) Execute() (checks.OctopusCheckResult, error) {
 	}
 
 	k8sTargets := lo.Filter(targets, func(item *machines.DeploymentTarget, index int) bool {
-		return item.Endpoint.GetCommunicationStyle() == "Kubernetes"
+		return item.Endpoint != nil && item.Endpoint.GetCommunicationStyle() == "Kubernetes"
 	})
 
 	insecureMachines := []string{}
