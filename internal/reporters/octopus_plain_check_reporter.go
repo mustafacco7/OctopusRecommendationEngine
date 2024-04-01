@@ -31,6 +31,8 @@ func (o OctopusPlainCheckReporter) Generate(results []checks.OctopusCheckResult)
 
 	if len(report) == 0 {
 		return "No issues detected", nil
+	} else {
+		report = append(report, "The checks are documented at https://github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/wiki")
 	}
 
 	return strings.Join(report[:], "\n\n"), nil
