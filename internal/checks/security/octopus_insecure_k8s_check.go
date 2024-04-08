@@ -41,7 +41,7 @@ func (o OctopusInsecureK8sCheck) Execute() (checks.OctopusCheckResult, error) {
 		}
 	}()
 
-	targets, err := o.client.Machines.GetAll()
+	targets, err := machines.GetAll(o.client, o.client.GetSpaceID())
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Security, err)
