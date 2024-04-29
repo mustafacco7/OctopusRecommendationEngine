@@ -53,6 +53,11 @@ func (o OctopusUnusedProjectsCheck) Execute() (checks.OctopusCheckResult, error)
 	unusedProjects := []string{}
 	for _, project := range projects {
 
+		// Ignore disabled projects
+		if project.IsDisabled {
+			continue
+		}
+
 		projectHasTask := false
 
 		tasks, err := o.client.Tasks.Get(tasks.TasksQuery{
