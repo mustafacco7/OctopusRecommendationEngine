@@ -31,8 +31,9 @@ func (o OctopusCheckFactory) BuildAllChecks(config *config.OctolintConfig) ([]ch
 		return strings.TrimSpace(item)
 	})
 
-	onlyChecksSlice := lo.Map(strings.Split(config.OnlyTests, ","), func(item string, index int) string {
-		return strings.TrimSpace(item)
+	onlyChecksSlice := lo.FilterMap(strings.Split(config.OnlyTests, ","), func(item string, index int) (string, bool) {
+		itemTrimmed := strings.TrimSpace(item)
+		return itemTrimmed, len(itemTrimmed) != 0
 	})
 
 	allChecks := []checks.OctopusCheck{
