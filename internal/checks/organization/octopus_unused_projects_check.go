@@ -83,7 +83,7 @@ func (o OctopusUnusedProjectsCheck) Execute() (checks.OctopusCheckResult, error)
 		}
 	}
 
-	daysString := fmt.Sprintf("%s", time.Hour*24*time.Duration(o.config.MaxDaysSinceLastTask))
+	daysString := fmt.Sprintf("%d", o.config.MaxDaysSinceLastTask)
 
 	if len(unusedProjects) > 0 {
 		return checks.NewOctopusCheckResultImpl(
