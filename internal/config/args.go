@@ -5,6 +5,7 @@ type OctolintConfig struct {
 	Space         string
 	ApiKey        string
 	SkipTests     string
+	OnlyTests     string
 	VerboseErrors bool
 	Version       bool
 	Spinner       bool

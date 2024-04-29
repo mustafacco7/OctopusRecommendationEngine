@@ -124,6 +124,7 @@ func parseArgs() (*config.OctolintConfig, error) {
 	flag.StringVar(&config.Space, "space", "", "The Octopus space name or ID")
 	flag.StringVar(&config.ApiKey, "apiKey", "", "The Octopus api key")
 	flag.StringVar(&config.SkipTests, "skipTests", "", "A comma separated list of tests to skip")
+	flag.StringVar(&config.OnlyTests, "onlyTests", "", "A comma separated list of tests to include")
 	flag.StringVar(&config.ConfigFile, "configFile", "octolint", "The name of the configuration file to use. Do not include the extension. Defaults to octolint")
 	flag.StringVar(&config.ConfigPath, "configPath", ".", "The path of the configuration file to use. Defaults to the current directory")
 	flag.BoolVar(&config.Verbose, "verbose", false, "Print verbose logs")

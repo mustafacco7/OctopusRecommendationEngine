@@ -61,15 +61,9 @@ func (o OctopusUnusedProjectsCheck) Execute() (checks.OctopusCheckResult, error)
 		projectHasTask := false
 
 		tasks, err := o.client.Tasks.Get(tasks.TasksQuery{
-			Environment:             "",
-			HasPendingInterruptions: false,
-			HasWarningsOrErrors:     false,
-			IncludeSystem:           true,
-			IsActive:                false,
-			IsRunning:               false,
-			Project:                 project.ID,
-			Skip:                    0,
-			Take:                    100,
+			Project: project.ID,
+			Skip:    0,
+			Take:    100,
 		})
 
 		if err != nil {

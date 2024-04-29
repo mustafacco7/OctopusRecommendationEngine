@@ -31,6 +31,10 @@ func (o OctopusCheckFactory) BuildAllChecks(config *config.OctolintConfig) ([]ch
 		return strings.TrimSpace(item)
 	})
 
+	onlyChecksSlice := lo.Map(strings.Split(config.OnlyTests, ","), func(item string, index int) string {
+		return strings.TrimSpace(item)
+	})
+
 	allChecks := []checks.OctopusCheck{
 		security.NewOctopusUnrotatedAccountsCheck(o.client, config, o.errorHandler),
 		security.NewOctopusDeploymentQueuedByAdminCheck(o.client, config, o.errorHandler),
@@ -64,6 +68,7 @@ func (o OctopusCheckFactory) BuildAllChecks(config *config.OctolintConfig) ([]ch
 	}
 
 	return lo.Filter(allChecks, func(item checks.OctopusCheck, index int) bool {
-		return slices.Index(skipChecksSlice, item.Id()) == -1
+		return slices.Index(skipChecksSlice, item.Id()) == -1 &&
+			(len(onlyChecksSlice) == 0 || slices.Index(onlyChecksSlice, item.Id()) != -1)
 	}), nil
 }
