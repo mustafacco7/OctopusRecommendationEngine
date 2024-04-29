@@ -2,6 +2,7 @@ package organization
 
 import (
 	"errors"
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/tasks"
@@ -82,9 +83,11 @@ func (o OctopusUnusedProjectsCheck) Execute() (checks.OctopusCheckResult, error)
 		}
 	}
 
+	daysString := fmt.Sprintf("%s", time.Hour*24*time.Duration(o.config.MaxDaysSinceLastTask))
+
 	if len(unusedProjects) > 0 {
 		return checks.NewOctopusCheckResultImpl(
-			"The following projects have not had any tasks 30 days:\n"+strings.Join(unusedProjects, "\n"),
+			"The following projects have not had any tasks "+daysString+"days:\n"+strings.Join(unusedProjects, "\n"),
 			o.Id(),
 			"",
 			checks.Warning,
@@ -92,7 +95,7 @@ func (o OctopusUnusedProjectsCheck) Execute() (checks.OctopusCheckResult, error)
 	}
 
 	return checks.NewOctopusCheckResultImpl(
-		"There are no projects that have not had any tasks in the last 30 days",
+		"There are no projects that have not had any tasks in the last "+daysString+" days",
 		o.Id(),
 		"",
 		checks.Ok,
