@@ -27,8 +27,9 @@ func NewOctopusCheckFactory(client *client.Client, url string, space string) Oct
 
 // BuildAllChecks creates new instances of all the checks and returns them as an array.
 func (o OctopusCheckFactory) BuildAllChecks(config *config.OctolintConfig) ([]checks.OctopusCheck, error) {
-	skipChecksSlice := lo.Map(strings.Split(config.SkipTests, ","), func(item string, index int) string {
-		return strings.TrimSpace(item)
+	skipChecksSlice := lo.FilterMap(strings.Split(config.SkipTests, ","), func(item string, index int) (string, bool) {
+		itemTrimmed := strings.TrimSpace(item)
+		return itemTrimmed, len(itemTrimmed) != 0
 	})
 
 	onlyChecksSlice := lo.FilterMap(strings.Split(config.OnlyTests, ","), func(item string, index int) (string, bool) {
