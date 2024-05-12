@@ -2,6 +2,7 @@ package security
 
 import (
 	"errors"
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
@@ -47,14 +48,10 @@ func (o OctopusDuplicatedGitCredentialsCheck) Execute() (checks.OctopusCheckResu
 		return nil, errors.New("octoclient is nil")
 	}
 
-	if o.config.Verbose {
-		zap.L().Info("Starting check " + o.Id())
-	}
+	zap.L().Debug("Starting check " + o.Id())
 
 	defer func() {
-		if o.config.Verbose {
-			zap.L().Info("Ended check " + o.Id())
-		}
+		zap.L().Debug("Ended check " + o.Id())
 	}()
 
 	url := o.client.HttpSession().BaseURL.String() + "/api/" + o.client.GetSpaceID() + "/Projects?take=1000"
@@ -66,7 +63,9 @@ func (o OctopusDuplicatedGitCredentialsCheck) Execute() (checks.OctopusCheckResu
 
 	gitUsernameCounts := map[string]int{}
 	gitUsernameProjects := map[string][]string{}
-	for _, p := range allProjects.Items {
+	for i, p := range allProjects.Items {
+		zap.L().Debug(o.Id() + " " + fmt.Sprintf("%.2f", float32(i+1)/float32(len(allProjects.Items))*100) + "% complete")
+
 		if p.PersistenceSettings.Type == "VersionControlled" &&
 			p.PersistenceSettings.Credentials.Type == "UsernamePassword" &&
 			p.PersistenceSettings.Credentials.Username != nil {

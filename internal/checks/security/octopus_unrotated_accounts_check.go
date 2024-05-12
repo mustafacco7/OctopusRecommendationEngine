@@ -2,6 +2,7 @@ package security
 
 import (
 	"errors"
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/accounts"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
@@ -37,14 +38,10 @@ func (o OctopusUnrotatedAccountsCheck) Execute() (checks.OctopusCheckResult, err
 		return nil, errors.New("octoclient is nil")
 	}
 
-	if o.config.Verbose {
-		zap.L().Info("Starting check " + o.Id())
-	}
+	zap.L().Debug("Starting check " + o.Id())
 
 	defer func() {
-		if o.config.Verbose {
-			zap.L().Info("Ended check " + o.Id())
-		}
+		zap.L().Debug("Ended check " + o.Id())
 	}()
 
 	now := time.Now()
@@ -58,7 +55,9 @@ func (o OctopusUnrotatedAccountsCheck) Execute() (checks.OctopusCheckResult, err
 	}
 
 	uneditedAccounts := []string{}
-	for _, m := range allAccounts {
+	for i, m := range allAccounts {
+
+		zap.L().Debug(o.Id() + " " + fmt.Sprintf("%.2f", float32(i+1)/float32(len(allAccounts))*100) + "% complete")
 
 		// Skip OIDC accounts
 		if m.GetAccountType() == "AmazonWebServicesOidcAccount" {

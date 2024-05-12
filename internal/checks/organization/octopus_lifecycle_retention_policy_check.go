@@ -2,6 +2,7 @@ package organization
 
 import (
 	"errors"
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/lifecycles"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
@@ -29,14 +30,10 @@ func (o OctopusLifecycleRetentionPolicyCheck) Execute() (checks.OctopusCheckResu
 		return nil, errors.New("octoclient is nil")
 	}
 
-	if o.config.Verbose {
-		zap.L().Info("Starting check " + o.Id())
-	}
+	zap.L().Debug("Starting check " + o.Id())
 
 	defer func() {
-		if o.config.Verbose {
-			zap.L().Info("Ended check " + o.Id())
-		}
+		zap.L().Debug("Ended check " + o.Id())
 	}()
 
 	lifecycles, err := o.client.Lifecycles.GetAll()
@@ -46,7 +43,9 @@ func (o OctopusLifecycleRetentionPolicyCheck) Execute() (checks.OctopusCheckResu
 	}
 
 	keepsForever := []string{}
-	for _, l := range lifecycles {
+	for i, l := range lifecycles {
+		zap.L().Debug(o.Id() + " " + fmt.Sprintf("%.2f", float32(i+1)/float32(len(lifecycles))*100) + "% complete")
+
 		phaseKeepsForever, err := o.anyPhasesKeepForever(l.Phases)
 
 		if err != nil {

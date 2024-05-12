@@ -2,6 +2,7 @@ package naming
 
 import (
 	"errors"
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
@@ -36,14 +37,10 @@ func (o OctopusInvalidTargetRole) Execute() (checks.OctopusCheckResult, error) {
 		return nil, errors.New("octoclient is nil")
 	}
 
-	if o.config.Verbose {
-		zap.L().Info("Starting check " + o.Id())
-	}
+	zap.L().Debug("Starting check " + o.Id())
 
 	defer func() {
-		if o.config.Verbose {
-			zap.L().Info("Ended check " + o.Id())
-		}
+		zap.L().Debug("Ended check " + o.Id())
 	}()
 
 	if strings.TrimSpace(o.config.TargetRoleRegex) == "" {
@@ -68,7 +65,9 @@ func (o OctopusInvalidTargetRole) Execute() (checks.OctopusCheckResult, error) {
 	}
 
 	responses := []string{}
-	for _, m := range allMachines {
+	for i, m := range allMachines {
+		zap.L().Debug(o.Id() + " " + fmt.Sprintf("%.2f", float32(i+1)/float32(len(allMachines))*100) + "% complete")
+
 		invalidRoles := []string{}
 		for _, r := range m.Roles {
 			if !regex.Match([]byte(r)) {

@@ -32,14 +32,10 @@ func (o OctopusEnvironmentCountCheck) Execute() (checks.OctopusCheckResult, erro
 		return nil, errors.New("octoclient is nil")
 	}
 
-	if o.config.Verbose {
-		zap.L().Info("Starting check " + o.Id())
-	}
+	zap.L().Debug("Starting check " + o.Id())
 
 	defer func() {
-		if o.config.Verbose {
-			zap.L().Info("Ended check " + o.Id())
-		}
+		zap.L().Debug("Ended check " + o.Id())
 	}()
 
 	query := environments.EnvironmentsQuery{

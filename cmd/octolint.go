@@ -19,6 +19,7 @@ import (
 	"github.com/briandowns/spinner"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"net/http"
 	"net/url"
 	"os"
@@ -29,13 +30,13 @@ import (
 var Version = "development"
 
 func main() {
-	zap.ReplaceGlobals(zap.Must(zap.NewProduction()))
-
 	config, err := parseArgs()
 
 	if err != nil {
 		errorExit(err.Error())
 	}
+
+	zap.ReplaceGlobals(createLogger(config.Verbose))
 
 	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
 
@@ -110,6 +111,39 @@ func main() {
 	}
 
 	fmt.Println(report)
+}
+
+func createLogger(verbose bool) *zap.Logger {
+	encoderCfg := zap.NewProductionEncoderConfig()
+	encoderCfg.TimeKey = "timestamp"
+	encoderCfg.EncodeTime = zapcore.ISO8601TimeEncoder
+
+	level := zap.InfoLevel
+
+	if verbose {
+		level = zap.DebugLevel
+	}
+
+	zapConfig := zap.Config{
+		Level:             zap.NewAtomicLevelAt(level),
+		Development:       false,
+		DisableCaller:     false,
+		DisableStacktrace: false,
+		Sampling:          nil,
+		Encoding:          "json",
+		EncoderConfig:     encoderCfg,
+		OutputPaths: []string{
+			"stderr",
+		},
+		ErrorOutputPaths: []string{
+			"stderr",
+		},
+		InitialFields: map[string]interface{}{
+			"pid": os.Getpid(),
+		},
+	}
+
+	return zap.Must(zapConfig.Build())
 }
 
 func errorExit(message string) {

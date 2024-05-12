@@ -2,6 +2,7 @@ package security
 
 import (
 	"errors"
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
@@ -43,14 +44,10 @@ func (o OctopusPerpetualApiKeysCheck) Execute() (checks.OctopusCheckResult, erro
 		return nil, errors.New("octoclient is nil")
 	}
 
-	if o.config.Verbose {
-		zap.L().Info("Starting check " + o.Id())
-	}
+	zap.L().Debug("Starting check " + o.Id())
 
 	defer func() {
-		if o.config.Verbose {
-			zap.L().Info("Ended check " + o.Id())
-		}
+		zap.L().Debug("Ended check " + o.Id())
 	}()
 
 	users, err := o.client.Users.GetAll()
@@ -61,7 +58,8 @@ func (o OctopusPerpetualApiKeysCheck) Execute() (checks.OctopusCheckResult, erro
 
 	linksTemplate := regexp.MustCompile(`\{.+\}`)
 	perpetualApiKeys := []string{}
-	for _, u := range users {
+	for i, u := range users {
+		zap.L().Debug(o.Id() + " " + fmt.Sprintf("%.2f", float32(i+1)/float32(len(users))*100) + "% complete")
 
 		apiKeysLink := linksTemplate.ReplaceAllString(u.Links["ApiKeys"], "")
 		keys, err := newclient.Get[resources.Resources[APIKey]](o.client.HttpSession(), apiKeysLink)

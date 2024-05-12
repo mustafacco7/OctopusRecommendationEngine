@@ -2,6 +2,7 @@ package organization
 
 import (
 	"errors"
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/tenants"
@@ -32,14 +33,10 @@ func (o OctopusTenantsInsteadOfTagsCheck) Execute() (checks.OctopusCheckResult, 
 		return nil, errors.New("octoclient is nil")
 	}
 
-	if o.config.Verbose {
-		zap.L().Info("Starting check " + o.Id())
-	}
+	zap.L().Debug("Starting check " + o.Id())
 
 	defer func() {
-		if o.config.Verbose {
-			zap.L().Info("Ended check " + o.Id())
-		}
+		zap.L().Debug("Ended check " + o.Id())
 	}()
 
 	allTenants, err := o.client.Tenants.GetAll()
@@ -68,19 +65,25 @@ func (o OctopusTenantsInsteadOfTagsCheck) Execute() (checks.OctopusCheckResult, 
 
 	tenantReferenceCounts := map[string]int{}
 	tenantReferenceSources := map[string][]string{}
-	for _, a := range allAccounts {
+	for i, a := range allAccounts {
+		zap.L().Debug(o.Id() + " " + fmt.Sprintf("%.2f", float32(i+1)/float32(len(allAccounts))*33) + "% complete")
+
 		if a.GetTenantedDeploymentMode() == core.TenantedDeploymentModeTenantedOrUntenanted {
 			o.addTenants(a.GetTenantIDs(), "Account - "+a.GetName(), tenantReferenceCounts, tenantReferenceSources)
 		}
 	}
 
-	for _, c := range allCertificates {
+	for i, c := range allCertificates {
+		zap.L().Debug(o.Id() + " " + fmt.Sprintf("%.2f", float32(i+1)/float32(len(allCertificates))*33) + "% complete")
+
 		if c.TenantedDeploymentMode == core.TenantedDeploymentModeTenantedOrUntenanted {
 			o.addTenants(c.TenantIDs, "Certificate - "+c.Name, tenantReferenceCounts, tenantReferenceSources)
 		}
 	}
 
-	for _, m := range allMachines {
+	for i, m := range allMachines {
+		zap.L().Debug(o.Id() + " " + fmt.Sprintf("%.2f", float32(i+1)/float32(len(allMachines))*33) + "% complete")
+
 		if m.TenantedDeploymentMode == core.TenantedDeploymentModeTenantedOrUntenanted {
 			o.addTenants(m.TenantIDs, "Target - "+m.Name, tenantReferenceCounts, tenantReferenceSources)
 		}

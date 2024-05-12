@@ -54,14 +54,10 @@ func (o OctopusDeploymentQueuedTimeCheck) Execute() (checks.OctopusCheckResult, 
 		return nil, errors.New("octoclient is nil")
 	}
 
-	if o.config.Verbose {
-		zap.L().Info("Starting check " + o.Id())
-	}
+	zap.L().Debug("Starting check " + o.Id())
 
 	defer func() {
-		if o.config.Verbose {
-			zap.L().Info("Ended check " + o.Id())
-		}
+		zap.L().Debug("Ended check " + o.Id())
 	}()
 
 	resource, err := o.client.Events.Get(events.EventsQuery{
@@ -76,7 +72,9 @@ func (o OctopusDeploymentQueuedTimeCheck) Execute() (checks.OctopusCheckResult, 
 
 	deployments := []deploymentInfo{}
 	if resource != nil {
-		for _, r := range resource.Items {
+		for i, r := range resource.Items {
+			zap.L().Debug(o.Id() + " " + fmt.Sprintf("%.2f", float32(i+1)/float32(len(resource.Items))*100) + "% complete")
+
 			if r.Category == "DeploymentQueued" {
 				queuedDeploymentId := o.getDeploymentFromRelatedDocs(r)
 				for _, r2 := range resource.Items {

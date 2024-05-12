@@ -2,6 +2,7 @@ package security
 
 import (
 	"errors"
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
@@ -31,14 +32,10 @@ func (o OctopusInsecureK8sCheck) Execute() (checks.OctopusCheckResult, error) {
 		return nil, errors.New("octoclient is nil")
 	}
 
-	if o.config.Verbose {
-		zap.L().Info("Starting check " + o.Id())
-	}
+	zap.L().Debug("Starting check " + o.Id())
 
 	defer func() {
-		if o.config.Verbose {
-			zap.L().Info("Ended check " + o.Id())
-		}
+		zap.L().Debug("Ended check " + o.Id())
 	}()
 
 	targets, err := machines.GetAll(o.client, o.client.GetSpaceID())
@@ -52,7 +49,9 @@ func (o OctopusInsecureK8sCheck) Execute() (checks.OctopusCheckResult, error) {
 	})
 
 	insecureMachines := []string{}
-	for _, m := range k8sTargets {
+	for i, m := range k8sTargets {
+		zap.L().Debug(o.Id() + " " + fmt.Sprintf("%.2f", float32(i+1)/float32(len(k8sTargets))*100) + "% complete")
+
 		k8sEndpoint := m.Endpoint.(*machines.KubernetesEndpoint)
 		if k8sEndpoint.SkipTLSVerification || (k8sEndpoint.ClusterURL != nil && strings.HasPrefix(k8sEndpoint.ClusterURL.String(), "http://")) {
 			insecureMachines = append(insecureMachines, m.Name)

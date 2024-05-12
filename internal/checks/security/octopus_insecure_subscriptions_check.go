@@ -2,6 +2,7 @@ package security
 
 import (
 	"errors"
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
@@ -31,14 +32,10 @@ func (o OctopusInsecureSubscriptionsCheck) Execute() (checks.OctopusCheckResult,
 		return nil, errors.New("octoclient is nil")
 	}
 
-	if o.config.Verbose {
-		zap.L().Info("Starting check " + o.Id())
-	}
+	zap.L().Debug("Starting check " + o.Id())
 
 	defer func() {
-		if o.config.Verbose {
-			zap.L().Info("Ended check " + o.Id())
-		}
+		zap.L().Debug("Ended check " + o.Id())
 	}()
 
 	collection := resources.Resources[*OctopusSubscription]{}
@@ -49,7 +46,9 @@ func (o OctopusInsecureSubscriptionsCheck) Execute() (checks.OctopusCheckResult,
 	}
 
 	insecureItems := []string{}
-	for _, m := range collection.Items {
+	for i, m := range collection.Items {
+		zap.L().Debug(o.Id() + " " + fmt.Sprintf("%.2f", float32(i+1)/float32(len(collection.Items))*100) + "% complete")
+
 		if m.EventNotificationSubscription != nil && strings.HasPrefix(m.EventNotificationSubscription.WebhookURI, "http://") {
 			insecureItems = append(insecureItems, m.Name)
 		}

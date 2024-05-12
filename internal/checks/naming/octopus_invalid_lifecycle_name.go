@@ -2,6 +2,7 @@ package naming
 
 import (
 	"errors"
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
@@ -36,14 +37,10 @@ func (o OctopusInvalidLifecycleName) Execute() (checks.OctopusCheckResult, error
 		return nil, errors.New("octoclient is nil")
 	}
 
-	if o.config.Verbose {
-		zap.L().Info("Starting check " + o.Id())
-	}
+	zap.L().Debug("Starting check " + o.Id())
 
 	defer func() {
-		if o.config.Verbose {
-			zap.L().Info("Ended check " + o.Id())
-		}
+		zap.L().Debug("Ended check " + o.Id())
 	}()
 
 	if strings.TrimSpace(o.config.LifecycleNameRegex) == "" {
@@ -68,7 +65,9 @@ func (o OctopusInvalidLifecycleName) Execute() (checks.OctopusCheckResult, error
 	}
 
 	responses := []string{}
-	for _, l := range lifecycles {
+	for i, l := range lifecycles {
+		zap.L().Debug(o.Id() + " " + fmt.Sprintf("%.2f", float32(i+1)/float32(len(lifecycles))*100) + "% complete")
+
 		if !regex.Match([]byte(l.Name)) {
 			responses = append(responses, l.Name)
 		}

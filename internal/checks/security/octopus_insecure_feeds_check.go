@@ -2,6 +2,7 @@ package security
 
 import (
 	"errors"
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/feeds"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
@@ -30,14 +31,10 @@ func (o OctopusInsecureFeedsCheck) Execute() (checks.OctopusCheckResult, error) 
 		return nil, errors.New("octoclient is nil")
 	}
 
-	if o.config.Verbose {
-		zap.L().Info("Starting check " + o.Id())
-	}
+	zap.L().Debug("Starting check " + o.Id())
 
 	defer func() {
-		if o.config.Verbose {
-			zap.L().Info("Ended check " + o.Id())
-		}
+		zap.L().Debug("Ended check " + o.Id())
 	}()
 
 	targets, err := o.client.Feeds.GetAll()
@@ -47,7 +44,9 @@ func (o OctopusInsecureFeedsCheck) Execute() (checks.OctopusCheckResult, error) 
 	}
 
 	insecureFeeds := []string{}
-	for _, m := range targets {
+	for i, m := range targets {
+		zap.L().Debug(o.Id() + " " + fmt.Sprintf("%.2f", float32(i+1)/float32(len(targets))*100) + "% complete")
+
 		if m.GetFeedType() == "ArtifactoryGeneric" {
 			typedFeed := m.(*feeds.ArtifactoryGenericFeed)
 			if strings.HasPrefix(typedFeed.FeedURI, "http://") {

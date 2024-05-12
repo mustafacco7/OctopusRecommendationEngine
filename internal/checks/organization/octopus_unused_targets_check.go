@@ -2,6 +2,7 @@ package organization
 
 import (
 	"errors"
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
@@ -38,14 +39,10 @@ func (o OctopusUnusedTargetsCheck) Execute() (checks.OctopusCheckResult, error) 
 		return nil, errors.New("octoclient is nil")
 	}
 
-	if o.config.Verbose {
-		zap.L().Info("Starting check " + o.Id())
-	}
+	zap.L().Debug("Starting check " + o.Id())
 
 	defer func() {
-		if o.config.Verbose {
-			zap.L().Info("Ended check " + o.Id())
-		}
+		zap.L().Debug("Ended check " + o.Id())
 	}()
 
 	targets, err := o.client.Machines.GetAll()
@@ -56,7 +53,9 @@ func (o OctopusUnusedTargetsCheck) Execute() (checks.OctopusCheckResult, error) 
 
 	unusedMachines := []string{}
 	linksTemplate := regexp.MustCompile(`\{.+\}`)
-	for _, m := range targets {
+	for i, m := range targets {
+		zap.L().Debug(o.Id() + " " + fmt.Sprintf("%.2f", float32(i+1)/float32(len(targets))*100) + "% complete")
+
 		tasksLink := linksTemplate.ReplaceAllString(m.Links["TasksTemplate"], "")
 		tasks, err := newclient.Get[resources.Resources[tasks.Task]](o.client.HttpSession(), tasksLink+"?type=Deployment")
 

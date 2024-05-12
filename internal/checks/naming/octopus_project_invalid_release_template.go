@@ -2,6 +2,7 @@ package naming
 
 import (
 	"errors"
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
@@ -38,14 +39,10 @@ func (o OctopusProjectReleaseTemplateRegex) Execute() (checks.OctopusCheckResult
 		return nil, errors.New("octoclient is nil")
 	}
 
-	if o.config.Verbose {
-		zap.L().Info("Starting check " + o.Id())
-	}
+	zap.L().Debug("Starting check " + o.Id())
 
 	defer func() {
-		if o.config.Verbose {
-			zap.L().Info("Ended check " + o.Id())
-		}
+		zap.L().Debug("Ended check " + o.Id())
 	}()
 
 	if strings.TrimSpace(o.config.ProjectReleaseTemplateRegex) == "" {
@@ -71,7 +68,9 @@ func (o OctopusProjectReleaseTemplateRegex) Execute() (checks.OctopusCheckResult
 	}
 
 	results := []string{}
-	for _, p := range projects {
+	for i, p := range projects {
+		zap.L().Debug(o.Id() + " " + fmt.Sprintf("%.2f", float32(i+1)/float32(len(projects))*100) + "% complete")
+
 		if p.VersioningStrategy != nil && !regex.Match([]byte(p.VersioningStrategy.Template)) {
 			results = append(results, p.Name+" - "+p.VersioningStrategy.Template)
 		}
