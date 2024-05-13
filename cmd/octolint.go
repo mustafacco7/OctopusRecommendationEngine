@@ -130,7 +130,7 @@ func createLogger(verbose bool) *zap.Logger {
 		DisableCaller:     false,
 		DisableStacktrace: false,
 		Sampling:          nil,
-		Encoding:          "json",
+		Encoding:          "console",
 		EncoderConfig:     encoderCfg,
 		OutputPaths: []string{
 			"stderr",
