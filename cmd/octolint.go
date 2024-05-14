@@ -63,6 +63,10 @@ func main() {
 		errorExit("You must specify the API key with the -apiKey argument")
 	}
 
+	if config.Space == "" {
+		errorExit("You must specify the space key with the -space argument")
+	}
+
 	if !strings.HasPrefix(config.Space, "Spaces-") {
 		spaceId, err := lookupSpaceAsName(config.Url, config.Space, config.ApiKey)
 
