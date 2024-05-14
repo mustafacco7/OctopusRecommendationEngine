@@ -67,7 +67,7 @@ func main() {
 		spaceId, err := lookupSpaceAsName(config.Url, config.Space, config.ApiKey)
 
 		if err != nil {
-			errorExit("Failed to create the Octopus client")
+			errorExit("Failed to create the Octopus client. Check that the url, api key, and space are correct.\nThe error was: " + err.Error())
 		}
 
 		config.Space = spaceId
