@@ -68,7 +68,7 @@ func (o OctopusUnusedTargetsCheck) Execute() (checks.OctopusCheckResult, error) 
 
 		recentTask := false
 		for _, t := range tasks.Items {
-			if time.Now().Sub(*t.CompletedTime) < maxTimeSinceLastMachineDeployment {
+			if t.CompletedTime != nil && time.Now().Sub(*t.CompletedTime) < maxTimeSinceLastMachineDeployment {
 				recentTask = true
 				break
 			}
