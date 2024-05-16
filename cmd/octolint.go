@@ -30,61 +30,62 @@ import (
 var Version = "development"
 
 func main() {
-	config, err := parseArgs()
+	octolintConfig, err := parseArgs()
 
 	if err != nil {
 		errorExit(err.Error())
+		return
 	}
 
-	zap.ReplaceGlobals(createLogger(config.Verbose))
+	zap.ReplaceGlobals(createLogger(octolintConfig.Verbose))
 
 	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
 
-	if config.Spinner && !config.Verbose {
+	if octolintConfig.Spinner && !octolintConfig.Verbose {
 		s.Start()
 	}
 
 	defer func() {
-		if config.Spinner && !config.Verbose {
+		if octolintConfig.Spinner && !octolintConfig.Verbose {
 			s.Stop()
 		}
 	}()
 
-	if config.Version {
+	if octolintConfig.Version {
 		fmt.Println("Version: " + Version)
 		os.Exit(0)
 	}
 
-	if config.Url == "" {
+	if octolintConfig.Url == "" {
 		errorExit("You must specify the URL with the -url argument")
 	}
 
-	if config.ApiKey == "" {
+	if octolintConfig.ApiKey == "" {
 		errorExit("You must specify the API key with the -apiKey argument")
 	}
 
-	if config.Space == "" {
+	if octolintConfig.Space == "" {
 		errorExit("You must specify the space key with the -space argument")
 	}
 
-	if !strings.HasPrefix(config.Space, "Spaces-") {
-		spaceId, err := lookupSpaceAsName(config.Url, config.Space, config.ApiKey)
+	if !strings.HasPrefix(octolintConfig.Space, "Spaces-") {
+		spaceId, err := lookupSpaceAsName(octolintConfig.Url, octolintConfig.Space, octolintConfig.ApiKey)
 
 		if err != nil {
 			errorExit("Failed to create the Octopus client. Check that the url, api key, and space are correct.\nThe error was: " + err.Error())
 		}
 
-		config.Space = spaceId
+		octolintConfig.Space = spaceId
 	}
 
-	client, err := octoclient.CreateClient(config.Url, config.Space, config.ApiKey)
+	client, err := octoclient.CreateClient(octolintConfig.Url, octolintConfig.Space, octolintConfig.ApiKey)
 
 	if err != nil {
 		errorExit("Failed to create the Octopus client. Check that the url, api key, and space are correct.\nThe error was: " + err.Error())
 	}
 
-	factory := factory.NewOctopusCheckFactory(client, config.Url, config.Space)
-	checkCollection, err := factory.BuildAllChecks(config)
+	factory := factory.NewOctopusCheckFactory(client, octolintConfig.Url, octolintConfig.Space)
+	checkCollection, err := factory.BuildAllChecks(octolintConfig)
 
 	if err != nil {
 		errorExit("Failed to create the checks")
@@ -93,7 +94,7 @@ func main() {
 	executor := executor.NewOctopusCheckExecutor()
 	results, err := executor.ExecuteChecks(checkCollection, func(check checks.OctopusCheck, err error) error {
 		fmt.Fprintf(os.Stderr, "Failed to execute check "+check.Id())
-		if config.VerboseErrors {
+		if octolintConfig.VerboseErrors {
 			fmt.Println("##octopus[stdout-verbose]")
 			fmt.Println(err.Error())
 			fmt.Println("##octopus[stdout-default]")

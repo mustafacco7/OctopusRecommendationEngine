@@ -35,13 +35,17 @@ func TestPerpetualApiKeys(t *testing.T) {
 			return err
 		}
 
-		newSpaceClient.APIKeys.Create(&users.CreateAPIKey{
+		_, err = newSpaceClient.APIKeys.Create(&users.CreateAPIKey{
 			APIKey:  "",
 			Created: nil,
 			Purpose: "",
 			UserID:  allUsers[0].ID,
 			Expires: nil,
 		})
+
+		if err != nil {
+			return err
+		}
 
 		check := NewOctopusPerpetualApiKeysCheck(newSpaceClient, &config.OctolintConfig{}, checks.OctopusClientPermissiveErrorHandler{})
 
