@@ -90,8 +90,10 @@ func (o OctopusProjectSpecificEnvironmentCheck) Execute() (checks.OctopusCheckRe
 				channelLifecycle := o.getLifecycleById(allLifecycles, c.LifecycleID)
 				if channelLifecycle != nil {
 					// this is the default lifecycle, which includes all environments
-					if lifecycle.Phases == nil || len(lifecycle.Phases) == 0 {
-						projectEnvironments = append(projectEnvironments, o.getAllEnvironmentIds(allEnvironments)...)
+					if lifecycle != nil {
+						if lifecycle.Phases == nil || len(lifecycle.Phases) == 0 {
+							projectEnvironments = append(projectEnvironments, o.getAllEnvironmentIds(allEnvironments)...)
+						}
 					}
 
 					for _, phase := range channelLifecycle.Phases {
