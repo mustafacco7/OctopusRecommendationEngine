@@ -38,4 +38,5 @@ type OctolintConfig struct {
 	ProjectNameRegex            string
 	LifecycleNameRegex          string
 	MaxDaysSinceLastTask        int
+	MaxDuplicateVariables       int
 }

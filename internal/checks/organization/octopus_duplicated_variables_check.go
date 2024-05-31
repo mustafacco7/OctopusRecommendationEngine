@@ -14,6 +14,8 @@ import (
 	"strings"
 )
 
+const OctoLintDuplicatedVariables = "OctoLintDuplicatedVariables"
+
 type projectVar struct {
 	project1  *projects2.Project
 	variable1 *variables.Variable
@@ -34,7 +36,7 @@ func NewOctopusDuplicatedVariablesCheck(client *client.Client, config *config.Oc
 }
 
 func (o OctopusDuplicatedVariablesCheck) Id() string {
-	return "OctoLintDuplicatedVariables"
+	return OctoLintDuplicatedVariables
 }
 
 func (o OctopusDuplicatedVariablesCheck) Execute() (checks.OctopusCheckResult, error) {
@@ -72,9 +74,14 @@ func (o OctopusDuplicatedVariablesCheck) Execute() (checks.OctopusCheckResult, e
 
 	duplicateVars := []projectVar{}
 
+OuterLoop:
 	for index1 := 0; index1 < len(projects); index1++ {
 		project1 := projects[index1]
 		for _, variable1 := range projectVars[project1].Variables {
+			if o.config.MaxDuplicateVariables != 0 && len(duplicateVars) >= o.config.MaxDuplicateVariables {
+				break OuterLoop
+			}
+
 			if o.shouldIgnoreVariable(variable1) {
 				continue
 			}
