@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/tasks"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/client_wrapper"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"go.uber.org/zap"
 	"strings"
@@ -41,7 +41,7 @@ func (o OctopusUnusedProjectsCheck) Execute() (checks.OctopusCheckResult, error)
 		zap.L().Debug("Ended check " + o.Id())
 	}()
 
-	projects, err := projects.GetAll(o.client, o.client.GetSpaceID())
+	projects, err := client_wrapper.GetProjects(o.config.MaxUnusedProjects, o.client, o.config.Space)
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Organization, err)

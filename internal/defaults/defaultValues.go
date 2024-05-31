@@ -14,4 +14,5 @@ const MaxUnusedVariablesProjects = 100
 const MaxProjectStepsProjects = 100
 const MaxExclusiveEnvironmentsProjects = 100
 const MaxEmptyProjectCheckProjects = 100
+const MaxUnusedProjects = 100
 const MaxDefaultStepNameProjects = 100

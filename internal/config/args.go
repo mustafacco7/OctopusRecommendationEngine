@@ -49,6 +49,7 @@ type OctolintConfig struct {
 	MaxProjectSpecificEnvironmentProjects int
 	MaxProjectStepsProjects               int
 	MaxUnusedVariablesProjects            int
+	MaxUnusedProjects                     int
 	MaxDefaultStepNameProjects            int
 	MaxDeploymentsByAdminProjects         int
 }
