@@ -46,7 +46,7 @@ func (o OctopusProjectDefaultStepNames) Execute() (checks.OctopusCheckResult, er
 		zap.L().Debug("Ended check " + o.Id())
 	}()
 
-	projects, err := client_wrapper.GetProjects(o.config.MaxDefaultStepNameProjects, o.client, o.config.Space)
+	projects, err := client_wrapper.GetProjects(o.config.MaxDefaultStepNameProjects, o.client, o.client.GetSpaceID())
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Naming, err)

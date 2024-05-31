@@ -52,7 +52,7 @@ func (o OctopusInvalidVariableNameCheck) Execute() (checks.OctopusCheckResult, e
 		zap.L().Debug("Ended check " + o.Id())
 	}()
 
-	projects, err := client_wrapper.GetProjects(o.config.MaxInvalidVariableProjects, o.client, o.config.Space)
+	projects, err := client_wrapper.GetProjects(o.config.MaxInvalidVariableProjects, o.client, o.client.GetSpaceID())
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Naming, err)

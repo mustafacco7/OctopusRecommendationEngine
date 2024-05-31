@@ -64,7 +64,7 @@ func (o OctopusProjectWorkerPoolRegex) Execute() (checks.OctopusCheckResult, err
 			checks.Naming), nil
 	}
 
-	projects, err := client_wrapper.GetProjects(o.config.MaxInvalidWorkerPoolProjects, o.client, o.config.Space)
+	projects, err := client_wrapper.GetProjects(o.config.MaxInvalidWorkerPoolProjects, o.client, o.client.GetSpaceID())
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Naming, err)

@@ -42,7 +42,7 @@ func (o OctopusProjectSpecificEnvironmentCheck) Execute() (checks.OctopusCheckRe
 		zap.L().Debug("Ended check " + o.Id())
 	}()
 
-	projects, err := client_wrapper.GetProjects(o.config.MaxEmptyProjectCheckProjects, o.client, o.config.Space)
+	projects, err := client_wrapper.GetProjects(o.config.MaxProjectSpecificEnvironmentProjects, o.client, o.client.GetSpaceID())
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Organization, err)

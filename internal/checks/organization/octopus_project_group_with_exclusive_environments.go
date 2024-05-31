@@ -47,7 +47,7 @@ func (o OctopusProjectGroupsWithExclusiveEnvironmentsCheck) Execute() (checks.Oc
 		return o.errorHandler.HandleError(o.Id(), checks.Organization, err)
 	}
 
-	allProjects, err := client_wrapper.GetProjects(o.config.MaxExclusiveEnvironmentsProjects, o.client, o.config.Space)
+	allProjects, err := client_wrapper.GetProjects(o.config.MaxExclusiveEnvironmentsProjects, o.client, o.client.GetSpaceID())
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Organization, err)
