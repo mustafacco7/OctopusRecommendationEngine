@@ -58,6 +58,10 @@ func (o OctopusDuplicatedVariablesCheck) Execute() (checks.OctopusCheckResult, e
 
 	projectVars := map[*projects2.Project]variables.VariableSet{}
 	for i, p := range projects {
+		if o.config.MaxDuplicateVariables != 0 && i >= o.config.MaxDuplicateVariableProjects {
+			break
+		}
+
 		zap.L().Debug(o.Id() + " " + fmt.Sprintf("%.2f", float32(i+1)/float32(len(projects))*100) + "% complete")
 
 		variableSet, err := o.client.Variables.GetAll(p.ID)
