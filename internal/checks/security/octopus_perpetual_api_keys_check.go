@@ -18,7 +18,7 @@ type APIKeyKey struct {
 	Hint *string
 }
 
-// APIKey is used because the go client has an invalid APIKey value that prevents the usual functions for querying users keys
+// APIKey is used because the go client_wrapper has an invalid APIKey value that prevents the usual functions for querying users keys
 type APIKey struct {
 	APIKey  APIKeyKey  `json:"ApiKey,omitempty"`
 	Expires *time.Time `json:"Expires,omitempty"`

@@ -7,6 +7,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/client_wrapper"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"go.uber.org/zap"
 	"golang.org/x/exp/slices"
@@ -45,7 +46,7 @@ func (o OctopusProjectDefaultStepNames) Execute() (checks.OctopusCheckResult, er
 		zap.L().Debug("Ended check " + o.Id())
 	}()
 
-	projects, err := o.client.Projects.GetAll()
+	projects, err := client_wrapper.GetProjects(o.config.MaxDefaultStepNameProjects, o.client, o.config.Space)
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Naming, err)

@@ -7,6 +7,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/client_wrapper"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"go.uber.org/zap"
 	"regexp"
@@ -61,7 +62,7 @@ func (o OctopusProjectContainerImageRegex) Execute() (checks.OctopusCheckResult,
 			checks.Naming), nil
 	}
 
-	projects, err := o.client.Projects.GetAll()
+	projects, err := client_wrapper.GetProjects(o.config.MaxInvalidContainerImageProjects, o.client, o.config.Space)
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Naming, err)

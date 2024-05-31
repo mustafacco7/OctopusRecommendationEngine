@@ -6,12 +6,14 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/client_wrapper"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"go.uber.org/zap"
 	"strings"
 )
 
 const maxStepCount = 20
+const OctoLintTooManySteps = "OctoLintTooManySteps"
 
 // OctopusProjectTooManyStepsCheck checks to see if any project has too many steps.
 type OctopusProjectTooManyStepsCheck struct {
@@ -25,7 +27,7 @@ func NewOctopusProjectTooManyStepsCheck(client *client.Client, config *config.Oc
 }
 
 func (o OctopusProjectTooManyStepsCheck) Id() string {
-	return "OctoLintTooManySteps"
+	return OctoLintTooManySteps
 }
 
 func (o OctopusProjectTooManyStepsCheck) Execute() (checks.OctopusCheckResult, error) {
@@ -39,7 +41,7 @@ func (o OctopusProjectTooManyStepsCheck) Execute() (checks.OctopusCheckResult, e
 		zap.L().Debug("Ended check " + o.Id())
 	}()
 
-	projects, err := o.client.Projects.GetAll()
+	projects, err := client_wrapper.GetProjects(o.config.MaxProjectStepsProjects, o.client, o.config.Space)
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Organization, err)

@@ -8,6 +8,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/workerpools"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/client_wrapper"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"github.com/samber/lo"
 	"go.uber.org/zap"
@@ -63,7 +64,7 @@ func (o OctopusProjectWorkerPoolRegex) Execute() (checks.OctopusCheckResult, err
 			checks.Naming), nil
 	}
 
-	projects, err := o.client.Projects.GetAll()
+	projects, err := client_wrapper.GetProjects(o.config.MaxInvalidWorkerPoolProjects, o.client, o.config.Space)
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Naming, err)

@@ -6,11 +6,14 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/lifecycles"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/client_wrapper"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"go.uber.org/zap"
 	"golang.org/x/exp/slices"
 	"strings"
 )
+
+const OctoLintProjectGroupsWithExclusiveEnvironments = "OctoLintProjectGroupsWithExclusiveEnvironments"
 
 // OctopusProjectGroupsWithExclusiveEnvironmentsCheck checks to see if the project groups contain projects that have mutually exclusive environments.
 type OctopusProjectGroupsWithExclusiveEnvironmentsCheck struct {
@@ -24,7 +27,7 @@ func NewOctopusProjectGroupsWithExclusiveEnvironmentsCheck(client *client.Client
 }
 
 func (o OctopusProjectGroupsWithExclusiveEnvironmentsCheck) Id() string {
-	return "OctoLintProjectGroupsWithExclusiveEnvironments"
+	return OctoLintProjectGroupsWithExclusiveEnvironments
 }
 
 func (o OctopusProjectGroupsWithExclusiveEnvironmentsCheck) Execute() (checks.OctopusCheckResult, error) {
@@ -44,7 +47,7 @@ func (o OctopusProjectGroupsWithExclusiveEnvironmentsCheck) Execute() (checks.Oc
 		return o.errorHandler.HandleError(o.Id(), checks.Organization, err)
 	}
 
-	allProjects, err := o.client.Projects.GetAll()
+	allProjects, err := client_wrapper.GetProjects(o.config.MaxExclusiveEnvironmentsProjects, o.client, o.config.Space)
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Organization, err)

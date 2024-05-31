@@ -11,6 +11,7 @@ import (
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/factory"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/naming"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/organization"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks/security"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/defaults"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/executor"
@@ -72,7 +73,7 @@ func main() {
 		spaceId, err := lookupSpaceAsName(octolintConfig.Url, octolintConfig.Space, octolintConfig.ApiKey)
 
 		if err != nil {
-			errorExit("Failed to create the Octopus client. Check that the url, api key, and space are correct.\nThe error was: " + err.Error())
+			errorExit("Failed to create the Octopus client_wrapper. Check that the url, api key, and space are correct.\nThe error was: " + err.Error())
 		}
 
 		octolintConfig.Space = spaceId
@@ -81,7 +82,7 @@ func main() {
 	client, err := octoclient.CreateClient(octolintConfig.Url, octolintConfig.Space, octolintConfig.ApiKey)
 
 	if err != nil {
-		errorExit("Failed to create the Octopus client. Check that the url, api key, and space are correct.\nThe error was: " + err.Error())
+		errorExit("Failed to create the Octopus client_wrapper. Check that the url, api key, and space are correct.\nThe error was: " + err.Error())
 	}
 
 	factory := factory.NewOctopusCheckFactory(client, octolintConfig.Url, octolintConfig.Space)
@@ -174,6 +175,17 @@ func parseArgs() (*config.OctolintConfig, error) {
 	flag.IntVar(&config.MaxDaysSinceLastTask, "maxDaysSinceLastTask", defaults.MaxTimeSinceLastTask, "Maximum number of days since the last project task for the  "+organization.OctopusUnusedProjectsCheckName+" check")
 	flag.IntVar(&config.MaxDuplicateVariables, "maxDuplicateVariables", defaults.MaxDuplicateVariables, "Maximum number of duplicate variables to report on for the  "+organization.OctoLintDuplicatedVariables+" check. Set to 0 to report all duplicate variables.")
 	flag.IntVar(&config.MaxDuplicateVariableProjects, "maxDuplicateVariableProjects", defaults.MaxDuplicateVariableProjects, "Maximum number of projects to check for duplicate variables for the  "+organization.OctoLintDuplicatedVariables+" check. Set to 0 to report all duplicate variables.")
+	flag.IntVar(&config.MaxDeploymentsByAdminProjects, "maxDeploymentsByAdminProjects", defaults.MaxDeploymentsByAdminProjects, "Maximum number of projects to check for admin deployments for the  "+security.OctoLintDeploymentQueuedByAdmin+" check. Set to 0 to report all duplicate variables.")
+	flag.IntVar(&config.MaxInvalidVariableProjects, "maxInvalidVariableProjects", defaults.MaxInvalidVariableProjects, "Maximum number of projects to check for invalid variables for the  "+naming.OctoLintInvalidVariableNames+" check. Set to 0 to report all duplicate variables.")
+	flag.IntVar(&config.MaxInvalidVariableProjects, "maxInvalidWorkerPoolProjects", defaults.MaxInvalidWorkerPoolProjects, "Maximum number of projects to check for invalid worker pools for the  "+naming.OctoLintProjectWorkerPool+" check. Set to 0 to report all duplicate variables.")
+	flag.IntVar(&config.MaxInvalidContainerImageProjects, "maxInvalidContainerImageProjects", defaults.MaxInvalidContainerImageProjects, "Maximum number of projects to check for invalid container images for the  "+naming.OctoLintContainerImageName+" check. Set to 0 to report all duplicate variables.")
+	flag.IntVar(&config.MaxDefaultStepNameProjects, "maxDefaultStepNameProjects", defaults.MaxDefaultStepNameProjects, "Maximum number of projects to check for duplicate variables for the  "+naming.OctoLintProjectDefaultStepNames+" check. Set to 0 to report all duplicate variables.")
+	flag.IntVar(&config.MaxInvalidReleaseTemplateProjects, "maxInvalidReleaseTemplateProjects", defaults.MaxInvalidReleaseTemplateProjects, "Maximum number of projects to check for invalid release templates for the  "+naming.OctoLintProjectReleaseTemplate+" check. Set to 0 to report all duplicate variables.")
+	flag.IntVar(&config.MaxProjectSpecificEnvironmentProjects, "maxProjectSpecificEnvironmentProjects", defaults.MaxProjectSpecificEnvironmentProjects, "Maximum number of projects to check for unused variables for the  "+organization.OctoLintUnusedVariables+" check. Set to 0 to report all duplicate variables.")
+	flag.IntVar(&config.MaxUnusedVariablesProjects, "maxUnusedVariablesProjects", defaults.MaxUnusedVariablesProjects, "Maximum number of projects to check for project specific environments for the  "+organization.OctoLintProjectSpecificEnvs+" check. Set to 0 to report all duplicate variables.")
+	flag.IntVar(&config.MaxProjectStepsProjects, "maxProjectStepsProjects", defaults.MaxProjectStepsProjects, "Maximum number of projects to check for project step counts for the  "+organization.OctoLintTooManySteps+" check. Set to 0 to report all duplicate variables.")
+	flag.IntVar(&config.MaxExclusiveEnvironmentsProjects, "maxExclusiveEnvironmentsProjects", defaults.MaxExclusiveEnvironmentsProjects, "Maximum number of projects to check for exclusive environments for the  "+organization.OctoLintProjectGroupsWithExclusiveEnvironments+" check. Set to 0 to report all duplicate variables.")
+	flag.IntVar(&config.MaxEmptyProjectCheckProjects, "maxEmptyProjectCheckProjects", defaults.MaxEmptyProjectCheckProjects, "Maximum number of projects to check for no steps for the  "+organization.OctoLintEmptyProject+" check. Set to 0 to report all duplicate variables.")
 	flag.StringVar(&config.ContainerImageRegex, "containerImageRegex", "", "The regular expression used to validate container images for the "+naming.OctoLintContainerImageName+" check")
 	flag.StringVar(&config.VariableNameRegex, "variableNameRegex", "", "The regular expression used to validate variable names for the "+naming.OctoLintInvalidVariableNames+" check")
 	flag.StringVar(&config.TargetNameRegex, "targetNameRegex", "", "The regular expression used to validate target names for the "+naming.OctoLintInvalidTargetNames+" check")

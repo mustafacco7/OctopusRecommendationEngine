@@ -1,6 +1,6 @@
 package checks
 
-// OctopusClientErrorHandler is a service used to respond to errors from the octopus client.
+// OctopusClientErrorHandler is a service used to respond to errors from the octopus client_wrapper.
 type OctopusClientErrorHandler interface {
 	// HandleError either handles the error and returns a OctopusCheckResult, or bubbles an error up. This
 	// is called when the main request is made in a check, and the inability to process that first request

@@ -7,11 +7,14 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/lifecycles"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/client_wrapper"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"go.uber.org/zap"
 	"golang.org/x/exp/slices"
 	"strings"
 )
+
+const OctoLintProjectSpecificEnvs = "OctoLintProjectSpecificEnvs"
 
 // OctopusProjectSpecificEnvironmentCheck checks to see if any project variables are unused.
 type OctopusProjectSpecificEnvironmentCheck struct {
@@ -25,7 +28,7 @@ func NewOctopusProjectSpecificEnvironmentCheck(client *client.Client, config *co
 }
 
 func (o OctopusProjectSpecificEnvironmentCheck) Id() string {
-	return "OctoLintProjectSpecificEnvs"
+	return OctoLintProjectSpecificEnvs
 }
 
 func (o OctopusProjectSpecificEnvironmentCheck) Execute() (checks.OctopusCheckResult, error) {
@@ -39,7 +42,7 @@ func (o OctopusProjectSpecificEnvironmentCheck) Execute() (checks.OctopusCheckRe
 		zap.L().Debug("Ended check " + o.Id())
 	}()
 
-	projects, err := o.client.Projects.GetAll()
+	projects, err := client_wrapper.GetProjects(o.config.MaxEmptyProjectCheckProjects, o.client, o.config.Space)
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Organization, err)

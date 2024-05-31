@@ -6,10 +6,13 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/runbooks"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/client_wrapper"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"go.uber.org/zap"
 	"strings"
 )
+
+const OctoLintEmptyProject = "OctoLintEmptyProject"
 
 // OctopusEmptyProjectCheck checks for projects with no steps and no runbooks.
 type OctopusEmptyProjectCheck struct {
@@ -23,7 +26,7 @@ func NewOctopusEmptyProjectCheck(client *client.Client, config *config.OctolintC
 }
 
 func (o OctopusEmptyProjectCheck) Id() string {
-	return "OctoLintEmptyProject"
+	return OctoLintEmptyProject
 }
 
 func (o OctopusEmptyProjectCheck) Execute() (checks.OctopusCheckResult, error) {
@@ -37,7 +40,7 @@ func (o OctopusEmptyProjectCheck) Execute() (checks.OctopusCheckResult, error) {
 		zap.L().Debug("Ended check " + o.Id())
 	}()
 
-	projects, err := o.client.Projects.GetAll()
+	projects, err := client_wrapper.GetProjects(o.config.MaxEmptyProjectCheckProjects, o.client, o.config.Space)
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Organization, err)

@@ -8,12 +8,15 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/teams"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/users"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/client_wrapper"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"go.uber.org/zap"
 	"golang.org/x/exp/slices"
 	"strings"
 	"time"
 )
+
+const OctoLintDeploymentQueuedByAdmin = "OctoLintDeploymentQueuedByAdmin"
 
 // OctopusDeploymentQueuedByAdminCheck checks to see if any deployments were initiated by someone from the admin teams.
 // This usually means that a more specific and limited user should be created to perform deployments.
@@ -28,7 +31,7 @@ func NewOctopusDeploymentQueuedByAdminCheck(client *client.Client, config *confi
 }
 
 func (o OctopusDeploymentQueuedByAdminCheck) Id() string {
-	return "OctoLintDeploymentQueuedByAdmin"
+	return OctoLintDeploymentQueuedByAdmin
 }
 
 func (o OctopusDeploymentQueuedByAdminCheck) Execute() (checks.OctopusCheckResult, error) {
@@ -42,7 +45,7 @@ func (o OctopusDeploymentQueuedByAdminCheck) Execute() (checks.OctopusCheckResul
 		zap.L().Debug("Ended check " + o.Id())
 	}()
 
-	projects, err := o.client.Projects.GetAll()
+	projects, err := client_wrapper.GetProjects(o.config.MaxDeploymentsByAdminProjects, o.client, o.config.Space)
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Security, err)

@@ -11,11 +11,14 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/runbooks"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/checks"
+	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/client_wrapper"
 	"github.com/OctopusSolutionsEngineering/OctopusRecommendationEngine/internal/config"
 	"go.uber.org/zap"
 	"regexp"
 	"strings"
 )
+
+const OctoLintUnusedVariables = "OctoLintUnusedVariables"
 
 var linkOptions = regexp.MustCompile(`\{.*?}`)
 
@@ -31,7 +34,7 @@ func NewOctopusUnusedVariablesCheck(client *client.Client, config *config.Octoli
 }
 
 func (o OctopusUnusedVariablesCheck) Id() string {
-	return "OctoLintUnusedVariables"
+	return OctoLintUnusedVariables
 }
 
 func (o OctopusUnusedVariablesCheck) Execute() (checks.OctopusCheckResult, error) {
@@ -45,7 +48,7 @@ func (o OctopusUnusedVariablesCheck) Execute() (checks.OctopusCheckResult, error
 		zap.L().Debug("Ended check " + o.Id())
 	}()
 
-	projects, err := o.client.Projects.GetAll()
+	projects, err := client_wrapper.GetProjects(o.config.MaxUnusedVariablesProjects, o.client, o.config.Space)
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Organization, err)
