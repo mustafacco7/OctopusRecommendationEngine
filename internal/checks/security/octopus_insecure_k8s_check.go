@@ -61,7 +61,7 @@ func (o OctopusInsecureK8sCheck) Execute() (checks.OctopusCheckResult, error) {
 
 	if len(insecureMachines) > 0 {
 		return checks.NewOctopusCheckResultImpl(
-			"The following Kubernetes skip TLS validation or use an insecure HTTP endpoint:\n"+strings.Join(insecureMachines, "\n"),
+			"The following Kubernetes targets skip TLS validation or use an insecure HTTP endpoint:\n"+strings.Join(insecureMachines, "\n"),
 			o.Id(),
 			"",
 			checks.Warning,
