@@ -92,6 +92,13 @@ func main() {
 		errorExit("Failed to create the checks")
 	}
 
+	// Time the execution
+	startTime := time.Now().UnixMilli()
+	defer func() {
+		endTime := time.Now().UnixMilli()
+		fmt.Println("Report took " + fmt.Sprint((endTime-startTime)/1000) + " seconds")
+	}()
+
 	executor := executor.NewOctopusCheckExecutor()
 	results, err := executor.ExecuteChecks(checkCollection, func(check checks.OctopusCheck, err error) error {
 		fmt.Fprintf(os.Stderr, "Failed to execute check "+check.Id())
