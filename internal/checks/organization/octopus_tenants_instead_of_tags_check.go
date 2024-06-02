@@ -42,7 +42,7 @@ func (o OctopusTenantsInsteadOfTagsCheck) Execute() (checks.OctopusCheckResult, 
 		zap.L().Debug("Ended check " + o.Id())
 	}()
 
-	allTenants, err := o.client.Tenants.GetAll()
+	allTenants, err := client_wrapper.GetTenants(o.config.MaxTenantTagsTenants, o.client, o.client.GetSpaceID())
 
 	if err != nil {
 		return o.errorHandler.HandleError(o.Id(), checks.Organization, err)
