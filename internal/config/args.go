@@ -57,4 +57,5 @@ type OctolintConfig struct {
 	MaxTenantTagsTargets                  int
 	MaxInvalidRoleTargets                 int
 	MaxInvalidNameTargets                 int
+	MaxDeploymentTasks                    int
 }

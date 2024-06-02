@@ -20,4 +20,5 @@ const MaxUnhealthyTargets = 100
 const MaxInvalidRoleTargets = 100
 const MaxTenantTagsTargets = 100
 const MaxInvalidNameTargets = 100
+const MaxDeploymentTasks = 100
 const MaxDefaultStepNameProjects = 100
