@@ -83,7 +83,7 @@ The order of precedence from lowest to highest is:
 Octolint will scan 100 projects and targets by default. This prevents the scans from taking too long in large Octopus spaces.
 However, it also means that some issues may not be detected if they are in projects or targets that are not scanned.
 
-The arguments starting with `max...`, `maxDuplicateVariableProjects` or `maxUnhealthyTargets`, can be set to 0 to scan all projects
+The arguments starting with `max...`, like `maxDuplicateVariableProjects` or `maxUnhealthyTargets`, can be set to 0 to scan all projects
 or targets, or set to a number larger than 0 to scan a custom number of projects or targets.
 
 Run `octolint -h` to see all the available arguments.
