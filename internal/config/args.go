@@ -52,4 +52,9 @@ type OctolintConfig struct {
 	MaxUnusedProjects                     int
 	MaxDefaultStepNameProjects            int
 	MaxDeploymentsByAdminProjects         int
+	MaxUnusedTargets                      int
+	MaxUnhealthyTargets                   int
+	MaxTenantTagsTargets                  int
+	MaxInvalidRoleTargets                 int
+	MaxInvalidNameTargets                 int
 }
